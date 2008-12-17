@@ -1,5 +1,4 @@
-WordPress Video Player
-======================
+=== WordPress Video Player ===
 
 Contributors: Automattic Inc  
 Tags: WordPress video, video solution
