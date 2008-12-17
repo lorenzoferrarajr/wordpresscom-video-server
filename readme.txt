@@ -1,6 +1,5 @@
 
-WordPress Video Solution Framework
-===================================
+=== WordPress Video Solution Framework ===
 
 Contributors: Automattic Inc  
 Tags: WordPress video, video solution
