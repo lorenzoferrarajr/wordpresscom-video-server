@@ -7,6 +7,10 @@ Requires at least: 2.6
 Tested up to: 2.7
 Stable tag: trunk
 
+Video solutions framework, including player, transcoder and administration interface utilities as wpmu plugin. 
+It powers wordpress.com video solutions. 
+You need to customize it with your own infrastructure configurations in order to use it. 
+
 == Description ==
 
 The package contains video solutions framework, including transcoder and 
