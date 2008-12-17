@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>WordPress Video Player DEMO Page</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<style>
+		#player1 {width:400px; height:300px}
+		#player2 {width:70%; height:400px}
+		</style>
+		<script type="text/javascript" src="swfobject.js"></script>
+		<script type="text/javascript">
+		swfobject.embedSWF("wpp.swf?"+Math.random().toString(), "player1", "100%", "100%", "9.0.0", "expressInstall.swf",
+		{
+			guid:"0",
+			mode:2,
+			locksize:"no"
+		},{allowfullscreen:true,wmode:"opacity"});
+
+		swfobject.embedSWF("wpp.swf?"+Math.random().toString(), "player2", "100%", "100%", "9.0.0", "expressInstall.swf",
+		{
+			guid:"0",
+			mode:2,
+			locksize:"no"
+		},{allowfullscreen:true,wmode:"opacity"});
+		</script>
+	</head>
+	<body>
+	<h2>Fixed width</h2>
+	<div id="player1"></div>
+	<h2>Dynamic width</h2>
+	<div id="player2"></div>
+	<p>Try to resize this page to find the magic</p>
+	</body>
+</html>

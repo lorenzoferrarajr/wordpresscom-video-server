@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?><xml>
+<video>
+	<caption></caption>
+	<duration>104</duration>
+	<blog_domain>http://video.your-site.com</blog_domain>
+	<default_volume>94</default_volume>
+	<is_private>0</is_private>
+	<is_logged_in>0</is_logged_in>
+	<status_interval>15</status_interval>
+	<fmt_std>
+		<width>400</width>
+		<height>224</height>
+		<status_url>
+			http://stats.your-site.com/dummy-picture.gif?fmt=std&v=SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS
+		</status_url>
+		<movie_file>std.mp4</movie_file>
+		<original_img>std_original_image.jpg</original_img>
+		<thumbnail_img>std_thumbnail.jpg</thumbnail_img>
+	</fmt_std>
+	<fmt_dvd>
+		<width>640</width>
+		<height>360</height>
+		<status_url>
+			http://stats.your-site.com/dummy-picture.gif?fmt=dvd&v=SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS
+		</status_url>
+		<movie_file>dvd.mp4</movie_file>
+		<original_img>dvd_original_image.jpg</original_img>
+		<thumbnail_img>dvd_thumbnail.jpg</thumbnail_img>
+	</fmt_dvd>
+	<fmt_hd>
+		<width>1280</width>
+		<height>720</height>
+		<status_url>
+			http://stats.your-site.com/dummy-picture.gif?fmt=hd&v=SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS
+		</status_url>
+		<movie_file>hd.mp4</movie_file>
+		<original_img>hd_original_image.jpg</original_img>
+		<thumbnail_img>hd_thumbnail.jpg</thumbnail_img>
+	</fmt_hd>
+	<embed_code><![CDATA[<embed src="http://video.your-site.com/SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS" type="application/x-shockwave-flash" width="400" height="224" allowscriptaccess="always" allowfullscreen="true"></embed>]]>
+	</embed_code>
+	<large_embed_code><![CDATA[<embed src="http://video.your-site.com/SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS" type="application/x-shockwave-flash" width="640" height="360" allowscriptaccess="always" allowfullscreen="true"></embed>]]></large_embed_code>
+	<wp_embed>[wp_video SOME_ID_THAT_CAN_BE_GENERATED_BY_BACKEND_TECHNICALS]</wp_embed>
+</video>
+<flash_default_vars>
+	<show_title>1</show_title>
+	<color>01AAEA</color>
+	<full_screen>1</full_screen>
+</flash_default_vars>
+</xml>
