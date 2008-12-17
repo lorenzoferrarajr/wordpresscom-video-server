@@ -5,7 +5,7 @@ Contributors: Automattic Inc
 Tags: WordPress video, video solution
 Requires at least: 2.6
 Tested up to: 2.7
-Stable tag: 0.9
+Stable tag: trunk
 
 == Description ==
 
