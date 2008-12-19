@@ -8,7 +8,7 @@ Tested up to: 2.7
 Stable tag: trunk
 
 Video solutions framework, including player, transcoder and administration interface utilities as wpmu plugin. 
-It powers wordpress.com video solutions. 
+It powers wordpress.com video solutions. Supports multiple formats including HD. 
 You need to customize it with your own infrastructure configurations in order to use it. 
 
 == Description ==
@@ -16,8 +16,8 @@ You need to customize it with your own infrastructure configurations in order to
 The package contains video solutions framework, including transcoder and 
 administration interface utilities, written in PHP.  The code was developed 
 by Automattic Inc, and powers wordpress.com video solutions.  
-We hereby make it open source project so that you can reuse it, 
-build upon it, and share with the community. 
+It supports multiple formats including HD. 
+We hereby make it open source project so that you can reuse it, build upon it, and share with the community. 
 
 The solution is a WPMU plugin. However it can not be used as "out-of-the-box" type 
 because it also depends on your file serving infrastructure, 
