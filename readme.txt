@@ -24,15 +24,13 @@ because it also depends on your file serving infrastructure,
 and your URL schemes.  Customize your pieces, then you have a full-fledged video solution. 
 Or you can just reuse the individual components such as video player or transcoder. 
 
-The graph below illustrates the implemented video architecture: 
+Below illustrates the implemented video architecture: 
 
- |-----------------|      |-----------------------|      |------------------------|
- | user uploads    |      | transcodes the video  |      |downloads the mp4 and   |
- | a raw video     | ==>  | into h.264 mp4 and    | ==>  | thumbnail images,      |
- |                 |      | produces thumbnails   |      | replicate files        |
- |-----------------|      |-----------------------|      |------------------------|
-   Admin Web Server              Transcoder                  File Server
+1.[Admin Web Server]  user uploads raw video
 
+2.[Transcoder]  transcodes the video into h.264 mp4 (standard, DVD, and HD), and produces thumbnails 
+
+3.[File server] downloads the mp4 and thumbnail images, then replicates files  
 
 == Installation ==
 
