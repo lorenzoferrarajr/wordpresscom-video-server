@@ -121,10 +121,10 @@ package com.wordpress.wpp.ui
     }
     
     /**
-     * Remove the listeners 
+     * Remove the listeners for splash control use
      * 
      */    
-    public function removeAllListeners():void
+    public function unregisterSplashControl():void
     {
       play_btn.removeEventListener(MouseEvent.CLICK, playButtonHandler);
       videoSlider.removeEventListener (WPPEvents.SLIDER_SEEKING, seekVideoHandler);

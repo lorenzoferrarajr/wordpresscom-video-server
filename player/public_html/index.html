@@ -12,22 +12,22 @@
 		swfobject.embedSWF("wpp.swf?"+Math.random().toString(), "player1", "100%", "100%", "9.0.0", "expressInstall.swf",
 		{
 			guid:"0",
-			mode:2,
-			locksize:"no"
+			autoplay:"yes",
+			localmode:"yes",
 		},{allowfullscreen:true,wmode:"opacity"});
 
 		swfobject.embedSWF("wpp.swf?"+Math.random().toString(), "player2", "100%", "100%", "9.0.0", "expressInstall.swf",
 		{
 			guid:"0",
-			mode:2,
-			locksize:"no"
+			localmode:"yes",
+			autoplay:"no"
 		},{allowfullscreen:true,wmode:"opacity"});
 		</script>
 	</head>
 	<body>
-	<h2>Fixed width</h2>
+	<h2>Fixed width with autoplay</h2>
 	<div id="player1"></div>
-	<h2>Dynamic width</h2>
+	<h2>Dynamic width, non-autoplay</h2>
 	<div id="player2"></div>
 	<p>Try to resize this page to find the magic</p>
 	</body>

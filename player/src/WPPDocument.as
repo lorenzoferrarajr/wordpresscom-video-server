@@ -16,10 +16,11 @@ package
   import com.wordpress.wpp.config.WPPConfiguration;
   import com.wordpress.wpp.core.VControl;
   import com.wordpress.wpp.core.VCore;
+  import com.wordpress.wpp.core.VCoreDynamicSeeking;
   import com.wordpress.wpp.events.WPPEvents;
   import com.wordpress.wpp.gui.*;
+  import com.wordpress.wpp.ui.UIEndScreen;
   import com.wordpress.wpp.ui.UILayoutManager;
-  import com.wordpress.wpp.ui.UIMenuScreen;
   import com.wordpress.wpp.ui.UISplashControl;
   import com.wordpress.wpp.ui.UISplashScreen;
   import com.wordpress.wpp.utils.EmbedManager;
@@ -32,15 +33,19 @@ package
   import flash.events.Event;
   import flash.events.MouseEvent;
   import flash.ui.Mouse;
-  import flash.utils.Dictionary;
   
   // The main class of this Flash Application
   dynamic public class WPPDocument extends Sprite
   {
-
+    /**
+     * Stats reporter instance 
+     * 
+     */
+    public var statsReporter:StatsReport;
+    
     /**
      * max_report_time and total_report_time protects
-     *  the stats report from sending endless requests when an unexpected error happened
+     * the stats report from sending endless requests when an unexpected error happened
      *   
      */    
     public var max_report_time:Number = 200;
@@ -50,19 +55,6 @@ package
      * 
      */    
     public var total_report_time:Number = 0;
-
-    /**
-     * Whether to play the video as soon as the player is loaded
-     * TODO: If we set autoplay to true, then play the video at once (NOTICE: THIS FEATURE NEEDS THE USER TO SPECIFY A FLV PATH AS WELL BECAUSE WE WILL NOT ASK THE XML FOR IT)
-     * 
-     */
-    private var autoplay:Boolean;
-    
-    /**
-     * The default guid of a video if no guid is given externally
-     * 
-     */    
-    private var guid:String;
 
     /**
      * The information for the current video, almost everything 
@@ -78,23 +70,31 @@ package
     public var isHD:Boolean = false;
     
     /**
-     * HD Switcher manager 
-     * 
-     */    
-    private var hdManager:HDManager;
-    
-    
-    /**
      * Layout Manger Dictionrary Holder 
      * 
      */    
     public var layoutManager:UILayoutManager;
     
     /**
-     * Stats reporter instance 
+     * HD Switcher manager 
+     * 
+     */    
+    private var hdManager:HDManager;
+    
+    /**
+     * Whether to play the video as soon as the player is loaded
+     * TODO: If we set autoplay to true, then play the video at once (NOTICE: THIS FEATURE NEEDS THE USER TO SPECIFY A FLV PATH AS WELL BECAUSE WE WILL NOT ASK THE XML FOR IT)
      * 
      */
-    public var statsReporter:StatsReport;
+    private var autoplay:Boolean;
+    
+    /**
+     * The default guid of a video if no guid is given externally
+     * 
+     */    
+    private var guid:String;
+    
+    
 
     /**
      * Embed pop-up manager instance 
@@ -136,10 +136,10 @@ package
      * menu screen instance
      * 
      */    
-    public var menuScreen:UIMenuScreen;
+    public var endScreen:UIEndScreen;
     
     /**
-     * main video instance
+     * Main video instance, can be VCore or VCoreDynamicSeeking
      * 
      */    
     public var mainVideo:VCore;
@@ -183,16 +183,14 @@ package
       
       super();
       
+      // Load the settings from HTML (where the flashplayer embeded)
+      loadExternalSettings();
+      
       guid = WPPConfiguration.DEFAULT_GUID;
-      autoplay = WPPConfiguration.DEFAULT_AUTOPLAY;
-      
-      
+      autoplay = WPPConfiguration.AUTOPLAY_WHEN_LOADED;
       
       // Init the context menu
       var wpContextMenu:WPContextMenu = new WPContextMenu(this);
-      
-      // Load the settings from HTML (where the flashplayer embeded)
-      loadExternalSettings();
       
       // Initialize the Controller.
       guiCtr = controller_set; // the 'controller_set' is from the stage.
@@ -200,9 +198,6 @@ package
       // hide it at first
       guiCtr.visible = false;
       
-      
-      
-
       // Show the splash screen.
       splashScreen = new UISplashScreen(guid, this);
       
@@ -236,26 +231,26 @@ package
       
       // Setup the controller
       splashControl = new UISplashControl(guiCtr);
+      statsReporter = new StatsReport(info.status_url, info.status_interval, this);
+      statsReporter.videoImpression();
       
+      // Setup up the HD Manager
+      hdManager = new HDManager(this);
+      hdManager.renderHDButtons(splashControl, guiCtr);
+      turnOffHD();
+      
+      // If the autoplay flag is true, play the video at once
       if (autoplay)
       {
         playMainVideo(info);
       }
       else
       {
+        // Play the video until the user asks so
         splashControl.addEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_ON_HD, splashHDOnHandler);
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_OFF_HD, splashHDOffHandler);
-        
-        // Setup up the HD Manager
-        hdManager = new HDManager(this);
-        hdManager.renderHDButtons(splashControl, guiCtr);
-        turnOffHD();
       }
-      
-      statsReporter = new StatsReport(info.status_url, info.status_interval, this);
-      statsReporter.videoImpression();
-      
     }
     
     /**
@@ -318,12 +313,19 @@ package
      */
     private function playMainVideo(flvInfo:VideoInfo = null):void
     {
-
+      
       // report a video view information to the remote server
       statsReporter.videoView();
       
       // VCore instance handles almost all the core playing mechanism
-      mainVideo = new VCore(this, vo.movie_file, vo.width, vo.height);
+      if (WPPConfiguration.isDynamicSeeking)
+      {
+        mainVideo = new VCoreDynamicSeeking(this, vo.movie_file, vo.width, vo.height);
+      }
+      else
+      {
+        mainVideo = new VCore(this, vo.movie_file, vo.width, vo.height);
+      }
 
       // Attach a controller component to the VCore instance
       // the splashControl.videoslider and splashControl.volumeslider is passed into the VControl 
@@ -410,18 +412,20 @@ package
     private function mouseLeaveHandler(event:Event):void
     {
       this.stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseInHandler);
-      fadeController();
+      toggleController(false);
     }
     
     /**
      * Fade the controller 
      * 
-     */    
+      
     public function fadeController():void
     {
       // 1 - Whether we are in Full Screen mode, if yes, hide the mouse
       if (this.stage.displayState == "fullScreen")
+      {
         Mouse.hide();
+      }
       
       // 2 - Hide the controller
       controllerFader = new Fader(guiCtr, 10);
@@ -434,11 +438,55 @@ package
       }
       
     }
+    */
+    public function toggleController(isShowController:Boolean):void
+    {
+      if (isShowController)
+      {
+        // 1 - Show the mouse
+        Mouse.show();
+        
+        // 2 - halt the controller fader
+        controllerFader.abort();
+        guiCtr.alpha = 1;
+        guiCtr.visible = true;
+        
+        // 3 - halt the embed assets  
+        if (info.embededCode)
+        {
+          embedmainFader.abort();
+          embedtoggleFader.abort();
+          embedManager.embedMain.alpha = 1;
+          embedManager.toggleButton.alpha = 1;
+          embedManager.toggleButton.visible = true;
+          addChild(embedManager.embedMain);
+          addChild(embedManager.toggleButton);
+        }
+      }
+      else
+      {
+        // 1 - Whether we are in Full Screen mode, if yes, hide the mouse
+        if (this.stage.displayState == "fullScreen")
+        {
+          Mouse.hide();
+        }
+        
+        // 2 - Hide the controller
+        controllerFader = new Fader(guiCtr, 10);
+        
+        // 3 - Hide the embed assets if exists
+        if (info.embededCode)
+        {
+          embedmainFader = new Fader(embedManager.embedMain,10);
+          embedtoggleFader = new Fader(embedManager.toggleButton,10)
+        }
+      }
+    }
     
     /**
      * Show the controller 
      * 
-     */    
+     
     public function showController():void
     {
       // 1 - Show the mouse
@@ -461,7 +509,8 @@ package
         addChild(embedManager.toggleButton);
       }
     }
-
+    */
+        
     /**
      * When the mouse enters the stage from outside area, show the controller sets 
      * @param eevent
@@ -469,7 +518,7 @@ package
      */
     private function mouseInHandler(event:MouseEvent):void
     {
-      showController()
+      toggleController(true);
       stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseInHandler);
     } 
 
@@ -480,8 +529,8 @@ package
      */
     private function videoStopHandler(event:Event):void
     {
-      mainVideo.alpha = .25;
-      menuScreen = new UIMenuScreen(this);
+      mainVideo.alpha = WPPConfiguration.VCORE_CURTAIN_ALPHA;
+      endScreen = new UIEndScreen(this);
     }
     
     // Load external data
@@ -494,23 +543,40 @@ package
 
       // Maybe some day we need to be told the size ;)
       canvasWidth = this.stage.stageWidth;  
-      if (root.loaderInfo.parameters["canvasWidth"])
-        canvasWidth = root.loaderInfo.parameters["canvasWidth"];
+      if (root.loaderInfo.parameters["canvaswidth"])
+        canvasWidth = root.loaderInfo.parameters["canvaswidth"];
       
       canvasHeight = this.stage.stageHeight;
-      if (root.loaderInfo.parameters["canvasHeight"])
-        canvasHeight = root.loaderInfo.parameters["canvasHeight"];
-
+      if (root.loaderInfo.parameters["canvasheight"])
+        canvasHeight = root.loaderInfo.parameters["canvasheight"];
+        
+      if (root.loaderInfo.parameters["autoplay"]=="yes")
+      {
+        WPPConfiguration.AUTOPLAY_WHEN_LOADED = true;
+      }
+      else
+      {
+        WPPConfiguration.AUTOPLAY_WHEN_LOADED = false;
+      }
+      
+      if (root.loaderInfo.parameters["localmode"]=="yes" || WPPConfiguration.isLocalPlayer(this))
+      {
+        WPPConfiguration.IS_LOCAL_MODE = true;
+      }
+      else
+      {
+        WPPConfiguration.IS_LOCAL_MODE = false; 
+      }
     }
     
     // Kill the splash thing
     private function killSplashScreen():void
     {
-      splashScreen.removeAllListeners();
+      splashScreen.unregisterSplashScreen();
       splashScreen.removeEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
       splashScreen.removeEventListener(WPPEvents.SPLASH_SCREEN_INIT, initMainVideoHandler);
       
-      splashControl.removeAllListeners();
+      splashControl.unregisterSplashControl();
       splashControl.removeEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
       
       splashControl.removeEventListener(WPPEvents.SPLASH_TURN_ON_HD, splashHDOnHandler);

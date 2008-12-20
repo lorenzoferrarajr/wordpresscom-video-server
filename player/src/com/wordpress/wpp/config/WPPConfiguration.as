@@ -19,17 +19,32 @@ package com.wordpress.wpp.config
   // we can dynamically modify these values.
   public class WPPConfiguration
   {
-    // Local player   
-    public static const LOCAL_MODE:Boolean = true; 
-    public static const LOCAL_MODE_PATH:String = "clips";
-    public static const LOCAL_MODE_XML_FILENAME:String = "video.xml"; 
     
-    public static const DEFAULT_GUID:String = "OUzHUPL9";
-    public static const DEFAULT_AUTOPLAY:Boolean = false;
+    // Video settings
+    public static var VCORE_CURTAIN_ALPHA:Number = .25;
     
-    // Web player
-    public static const XML_URL_BASE:String = "http://v.wordpress.com/wp-content/plugins/video/video-xml.php";
     
+    // Default const data
+    // The default guid
+    public static var DEFAULT_GUID:String = "MvIhraHG";
+    // The default autoplay value
+    public static var AUTOPLAY_WHEN_LOADED:Boolean = false;
+
+    // Whether the backend support "dynamic(random) seeking"
+    // WARNING: Set to false when your server doesn't support dynamic seeking
+    public static var isDynamicSeeking:Boolean = true;
+    
+    // Local player configurations   
+    public static var IS_LOCAL_MODE:Boolean = false; 
+    public static var LOCAL_MODE_PATH:String = "clips";
+    public static var LOCAL_MODE_XML_FILENAME:String = "video.xml"; 
+    
+    
+    // The URL of video information's XML data source base
+    public static var XML_URL_BASE:String = "http://v.wordpress.com/wp-content/plugins/video/video-xml.php";
+    
+    // Get Slash By OS
+    // Not in use yet
     public static function getSlashByOS():String
     {
       if (flash.system.Capabilities.os.split("Mac").length == 2)
@@ -43,6 +58,8 @@ package com.wordpress.wpp.config
       return "\/";
     }
     
+    // To determine whether this is a local player
+    // Not in use yet.
     public static function isLocalPlayer(displayObject:DisplayObject):Boolean
     {
       if (displayObject.loaderInfo.url.slice(0,4) == "file")

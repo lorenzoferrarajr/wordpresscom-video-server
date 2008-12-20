@@ -151,13 +151,13 @@ package com.wordpress.wpp.core
       hideDaemonTimer = new Timer(5000,0);
       hideDaemonTimer.addEventListener(TimerEvent.TIMER, hideCtrHandler);
       hideDaemonTimer.start();
-      doc.showController();
+      doc.toggleController(true);
     }
     
     
     private function hideCtrHandler(event:TimerEvent)
     {
-      doc.fadeController();
+      doc.toggleController(false);
     }
     
     

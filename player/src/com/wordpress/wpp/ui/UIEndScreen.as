@@ -1,6 +1,7 @@
 ﻿/**
  * @package     com.wordpress.wpp.ui
- * @class       com.wordpress.wpp.ui.UIMenuScreen
+ * @class       com.wordpress.wpp.ui.UIEndScreen
+ * @deprecated  com.wordpress.wpp.ui.UIMenuScreen
  *
  * @description   
  * @author      automattic
@@ -18,12 +19,12 @@ package com.wordpress.wpp.ui
   import flash.events.EventDispatcher;
   import flash.events.MouseEvent;
   
-  public class UIMenuScreen extends EventDispatcher
+  public class UIEndScreen extends EventDispatcher
   {
     private var doc:WPPDocument;
     private var replayButton:GUIReplayButton;
     
-    public function UIMenuScreen(documentInstance:WPPDocument)
+    public function UIEndScreen(documentInstance:WPPDocument)
     {
       doc = documentInstance;
       doc.mainVideo.vpause(true);
@@ -38,8 +39,13 @@ package com.wordpress.wpp.ui
       doc.mainVideo.replay();
     }
     
-    public function removeAllListeners():void
+    /**
+     * Remove the listeners/instances for end screen 
+     * 
+     */    
+    public function unregisterEndScreen():void
     {
+      trace("REMOVING");
       doc.removeChild(replayButton);
       replayButton.removeEventListener(MouseEvent.CLICK, replayHandler);
     } 

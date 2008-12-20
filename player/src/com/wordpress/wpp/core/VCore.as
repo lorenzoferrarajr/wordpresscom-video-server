@@ -12,6 +12,7 @@
 
 package com.wordpress.wpp.core
 {
+  import com.wordpress.wpp.config.WPPConfiguration;
   import com.wordpress.wpp.events.WPPEvents;
   import com.wordpress.wpp.gui.*;
   import com.wordpress.wpp.ui.UILayoutManager;
@@ -73,16 +74,16 @@ package com.wordpress.wpp.core
       return this.offsetSeconds + video_ns.time;
     }
     
-    private var _isPlaying:Boolean = false;
+    private var isVideoPlaying:Boolean = false;
     public function get isPlaying():Boolean
     {
-      return _isPlaying;
+      return isVideoPlaying;
     }
     
-    private var _isStopped:Boolean = false;
+    private var isVideoStopped:Boolean = false;
     public function get isStopped():Boolean
     {
-      return _isStopped;
+      return isVideoStopped;
     }
     
     
@@ -163,7 +164,7 @@ package com.wordpress.wpp.core
         init_flv_url = _flv_url;
       }
       
-      killStop();
+      cleanEndStatus();
       
       video_width = width;
       video_height = height;
@@ -266,10 +267,23 @@ package com.wordpress.wpp.core
       }
     }
     
+    /**
+     * 
+     * @param t Number, the time to seek
+     * @param isReplay Boolean, will be true only when the user
+     *        clicks the play button at the menu screen.
+     * 
+     */    
     public function seek(t:Number, isReplay:Boolean = false):void
     {
-      if(wholeDuration == 0 || isNaN(wholeDuration)) return;
-      killStop();
+      // Whether we can seek this video
+      if(wholeDuration == 0 || isNaN(wholeDuration)) 
+      {
+        //trace('whole duration = 0 ERROR or cannot seek');
+        return;
+      }
+      // Kill the stop status
+      cleanEndStatus();
       var fetchedSeconds:Number = vLoadPercentage * wholeDuration - offsetSeconds;
       if (isReplay)
       {
@@ -293,19 +307,22 @@ package com.wordpress.wpp.core
         return;
       }
     }
-
-    private function killStop():void
+    
+    // Kill the stop status
+    private function cleanEndStatus():void
     {
-      if (_isStopped)
+      if (!isVideoStopped) return;
+      toggleCurtain(false);
+      if (doc.endScreen)
       {
-        _isStopped = false;
-        alpha = 1;
-        if (doc.menuScreen)
-        {
-          // doc killall.
-          doc.menuScreen.removeAllListeners();
-        }
+        doc.endScreen.unregisterEndScreen();
       }
+      isVideoStopped = false;
+    }
+    
+    private function toggleCurtain(isCurtainOn:Boolean):void
+    {
+      alpha = isCurtainOn ? WPPConfiguration.VCORE_CURTAIN_ALPHA : 1;
     }
 
     public function start(flv_url:String):void
@@ -322,9 +339,9 @@ package com.wordpress.wpp.core
     
     public function vplay():void
     {
-      killStop();
+      cleanEndStatus();
       video_ns.resume();
-      _isPlaying = !_isPlaying;
+      isVideoPlaying = !isVideoPlaying;
       
       dispatchCustomEvent(WPPEvents.VCORE_PLAY);
     }
@@ -334,12 +351,12 @@ package com.wordpress.wpp.core
       if (!b)
       {
         video_ns.togglePause();
-        _isPlaying = !_isPlaying;
+        isVideoPlaying = !isVideoPlaying;
       }
       else
       {
         video_ns.pause();
-        _isPlaying = false;
+        isVideoPlaying = false;
       }
       dispatchCustomEvent(WPPEvents.VCORE_PAUSED);
     }
@@ -379,7 +396,7 @@ package com.wordpress.wpp.core
         case NET_STREAM_PLAY_START:
           dispatchCustomEvent(WPPEvents.VCORE_PLAY);
           video_loading.visible = false;
-          _isPlaying = true;
+          isVideoPlaying = true;
           if (!video_message)
             if (this.contains(video_message))
               video_message.visible = false;
@@ -387,8 +404,8 @@ package com.wordpress.wpp.core
         
         case NET_STREAM_PLAY_STOP:
           dispatchCustomEvent(WPPEvents.VCORE_STOP);
-          _isPlaying = false;
-          _isStopped = true;
+          isVideoPlaying = false;
+          isVideoStopped = true;
           break;
           
         case NET_STREAM_BUFFER_EMPTY:

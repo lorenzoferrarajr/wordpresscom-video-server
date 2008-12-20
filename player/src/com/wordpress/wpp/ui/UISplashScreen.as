@@ -177,7 +177,11 @@ package com.wordpress.wpp.ui
       
     }
     
-    public function removeAllListeners():void
+    /**
+     * Remove the listeners / instances in splash screen
+     * 
+     */
+    public function unregisterSplashScreen():void
     {
       // Removes the listeners for the conver loader, release the memories.
       thumbLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imgCompleteHandler);

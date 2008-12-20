@@ -42,7 +42,7 @@ package com.wordpress.wpp.utils
       var requesetTargetURL:String = "";
       
       // Determine which mode to use
-      if (WPPConfiguration.LOCAL_MODE)
+      if (WPPConfiguration.IS_LOCAL_MODE)
       {
         requesetTargetURL = WPPConfiguration.LOCAL_MODE_PATH+"/"+
             WPPConfiguration.LOCAL_MODE_XML_FILENAME;
@@ -108,7 +108,7 @@ package com.wordpress.wpp.utils
         fmt_std.height        = Number(xmlData.video.fmt_std.height.toString());
         fmt_std.original_img  = xmlData.video.fmt_std.original_img.toString();
         fmt_std.thumbnail_img = xmlData.video.fmt_std.thumbnail_img.toString();
-        if (com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+        if (com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
         {
           fmt_std.movie_file = WPPConfiguration.LOCAL_MODE_PATH+"/"+
               fmt_std.movie_file;
@@ -129,7 +129,7 @@ package com.wordpress.wpp.utils
         fmt_dvd.height        = Number(xmlData.video.fmt_dvd.height.toString());
         fmt_dvd.original_img  = xmlData.video.fmt_dvd.original_img.toString();
         fmt_dvd.thumbnail_img = xmlData.video.fmt_dvd.thumbnail_img.toString();
-        if (com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+        if (com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
         {
           fmt_dvd.movie_file = WPPConfiguration.LOCAL_MODE_PATH+"/"+
               fmt_dvd.movie_file;
@@ -150,7 +150,7 @@ package com.wordpress.wpp.utils
         fmt_hd.height        = Number(xmlData.video.fmt_hd.height.toString());
         fmt_hd.original_img  = xmlData.video.fmt_hd.original_img.toString();
         fmt_hd.thumbnail_img = xmlData.video.fmt_hd.thumbnail_img.toString();
-        if (com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+        if (com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
         {
           fmt_hd.movie_file = WPPConfiguration.LOCAL_MODE_PATH+"/"+
               fmt_hd.movie_file;

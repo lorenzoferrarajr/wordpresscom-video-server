@@ -37,8 +37,10 @@ package com.wordpress.wpp.utils
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      {
         l.load(r);
+      }
       startTimer();
     }
     
@@ -82,8 +84,10 @@ package com.wordpress.wpp.utils
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      {
         l.load(r);
+      }
     }
 
     private function startTimer():void
@@ -153,8 +157,10 @@ package com.wordpress.wpp.utils
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.LOCAL_MODE)
+      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      {
         l.load(r);
+      }
       
       // 4 - Reset the timer
       resetCheckTime();
