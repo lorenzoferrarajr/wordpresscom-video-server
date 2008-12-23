@@ -32,26 +32,26 @@ package com.wordpress.wpp.utils
 
     // The XML Information
     private var xmlLoader:URLLoader;
-    private var xmlInfoObj:VideoInfo;
+    private var videoInfo:VideoInfo;
     
     public function WPVideoXMLParser(_guid:String)
     {
       guid = _guid;
-      xmlInfoObj = new VideoInfo();
+      videoInfo = new VideoInfo();
       
-      var requesetTargetURL:String = "";
+      var requestedURL:String = "";
       
       // Determine which mode to use
       if (WPPConfiguration.IS_LOCAL_MODE)
       {
-        requesetTargetURL = WPPConfiguration.LOCAL_MODE_PATH+"/"+
+        requestedURL = WPPConfiguration.LOCAL_MODE_PATH+"/"+
             WPPConfiguration.LOCAL_MODE_XML_FILENAME;
       }
       else
       {
-        requesetTargetURL = WPPConfiguration.XML_URL_BASE+"?guid="+guid;
+        requestedURL = WPPConfiguration.XML_URL_BASE+"?guid="+guid;
       }
-      requestRemoteData(requesetTargetURL);
+      requestRemoteData(requestedURL);
     }
     
     private function requestRemoteData(xmlURL:String):void
@@ -75,30 +75,35 @@ package com.wordpress.wpp.utils
       xmlData = new XML(event.target.data);
       
       // base info of the video from the XML
-      xmlInfoObj.mainCaption = xmlData.video.caption.toString();
-      xmlInfoObj.mainDuration = Number(xmlData.video.duration.toString());
-      xmlInfoObj.mainDomain   = xmlData.video.blog_domain.toString();
-      xmlInfoObj.volume = Number(xmlData.video.default_volume.toString())/100;
-            
+      videoInfo.mainCaption = xmlData.video.caption.toString();
+      videoInfo.mainDuration = Number(xmlData.video.duration.toString());
+      videoInfo.mainDomain   = xmlData.video.blog_domain.toString();
+      
+      
+      if (xmlData.video.default_volume.toString() != "")
+      {
+        videoInfo.volume = Number(xmlData.video.default_volume.toString())/100;
+      }
+      
       // meta info of the video from the XML
-      xmlInfoObj.mainUser = xmlData.video.username.toString();
-      xmlInfoObj.mainAvatar = xmlData.video.avatar.toString();
-      xmlInfoObj.mainDescription = xmlData.video.description.toString();
+      videoInfo.mainUser = xmlData.video.username.toString();
+      videoInfo.mainAvatar = xmlData.video.avatar.toString();
+      videoInfo.mainDescription = xmlData.video.description.toString();
       
       // Stats info of the video from the XML
-      xmlInfoObj.status_interval = Number(xmlData.video.status_interval);
-      xmlInfoObj.status_url = "";
+      videoInfo.status_interval = Number(xmlData.video.status_interval);
+      videoInfo.status_url = "";
       
       // Security and privacy info of the video from the XML
-      xmlInfoObj.isPrivate = (xmlData.video.is_private.toString() == '0') ? false : true ;
-      xmlInfoObj.isLogin = (xmlData.video.is_logged_in.toString() == '0') ? false : true ;
+      videoInfo.isPrivate = (xmlData.video.is_private.toString() == '0') ? false : true ;
+      videoInfo.isLogin = (xmlData.video.is_logged_in.toString() == '0') ? false : true ;
       
       // Externally embedding info of the video from the XML
-      xmlInfoObj.embededCode = xmlData.video.embed_code.toString();
-      xmlInfoObj.embededLargeCode = xmlData.video.large_embed_code.toString();
-      xmlInfoObj.embededWp = xmlData.video.wp_embed.toString();
+      videoInfo.embededCode = xmlData.video.embed_code.toString();
+      videoInfo.embededLargeCode = xmlData.video.large_embed_code.toString();
+      videoInfo.embededWp = xmlData.video.wp_embed.toString();
 
-      xmlInfoObj.hasHD = false;
+      videoInfo.hasHD = false;
       
       if ( xmlData.video.fmt_std.movie_file.toString().length > 0 ) 
       {
@@ -118,7 +123,7 @@ package com.wordpress.wpp.utils
               fmt_std.thumbnail_img;
         }
         fmt_std.status_url    = xmlData.video.fmt_std.status_url.toString();
-        xmlInfoObj.fmt_std = fmt_std; 
+        videoInfo.fmt_std = fmt_std; 
       }
       
       if ( xmlData.video.fmt_dvd.movie_file.toString().length > 0 ) 
@@ -139,7 +144,7 @@ package com.wordpress.wpp.utils
               fmt_dvd.thumbnail_img;
         }
         fmt_dvd.status_url    = xmlData.video.fmt_dvd.status_url.toString();      
-        xmlInfoObj.fmt_dvd = fmt_dvd;
+        videoInfo.fmt_dvd = fmt_dvd;
       }
       
       if ( xmlData.video.fmt_hd.movie_file.toString().length > 0 ) 
@@ -160,11 +165,11 @@ package com.wordpress.wpp.utils
               fmt_hd.thumbnail_img;
         }
         fmt_hd.status_url    = xmlData.video.fmt_hd.status_url.toString();
-        xmlInfoObj.fmt_hd = fmt_hd; 
-        xmlInfoObj.hasHD = true;
+        videoInfo.fmt_hd = fmt_hd; 
+        videoInfo.hasHD = true;
       }
 
-      var objectEvent:ObjectEvent = new ObjectEvent(WPPEvents.VIDEO_XML_LOADED, xmlInfoObj);
+      var objectEvent:ObjectEvent = new ObjectEvent(WPPEvents.VIDEO_XML_LOADED, videoInfo);
       dispatchEvent(objectEvent);
       
     }

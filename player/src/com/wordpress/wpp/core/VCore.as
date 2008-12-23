@@ -31,6 +31,47 @@ package com.wordpress.wpp.core
   
   public class VCore extends Sprite
   {
+    // Video size
+    public var video_width:int;
+    public var video_height:int;
+    
+    // Get the current time
+    public function get time():Number
+    {
+      return offsetSeconds + video_ns.time;
+    }
+    
+    // Get the status of whether the video is playing
+    public function get isPlaying():Boolean
+    {
+      return isVideoPlaying;
+    }
+    
+    // Get the status of whether the video is stopped
+    public function get isStopped():Boolean
+    {
+      return isVideoStopped;
+    }
+    
+    // Get the duration of this video
+    public function get duration():Number
+    {
+      return videoDuration;
+    }
+    
+    // Get the loaded (downloaded) bytes' percentage
+    public function get vLoadPercentage():Number
+    {
+      return offsetPercentage + video_ns.bytesLoaded/video_ns.bytesTotal;
+      /* return this.offset/this.duration + video_ns.bytesLoaded/video_ns.bytesTotal; */
+    }
+    
+    public function get volume():Boolean
+    {
+      return (video_ns.soundTransform.volume == 0 ) ? true : false ;
+    }
+    
+    
     private const NET_STREAM_PLAY_START:String = "NetStream.Play.Start"
     private const NET_STREAM_PLAY_STOP:String = "NetStream.Play.Stop";
     private const NET_STREAM_BUFFER_EMPTY:String = "NetStream.Buffer.Empty";
@@ -40,88 +81,85 @@ package com.wordpress.wpp.core
     
     private const NOT_FOUND_MESSAGE:String = "Sorry, the video is currently not available";
     
+    // A reference to the main class
+    //     Maybe we will deprecate this class variable later and let the components 
+    //     works in an event driven model
     private var doc:WPPDocument;
     
-    // The essential components of our wordpress video player    
+    // The essential components of our wordpress video player
+    // The video instance
     private var videoInstance:Video;
-    private var video_ns:NetStream;
+    
+    // The net stream instance
+    protected var video_ns:NetStream;
+    
+    // The net connection instance
     private var video_nc:NetConnection;
     
+    // The loading assets
     private var video_loading:GUIVideoLoading;
-    //private var video_pausing:GUIVideoPausing;
+    
+    // The message text field
     private var video_message:TextField = new TextField();
     
-    
-    // The FLV related variables
+    // The FLV URL
     private var flv_url:String;
-    private var init_flv_url:String;
     
-    public var video_width:int;
-    public var video_height:int;
+    // The init FLV URL
+    protected var init_flv_url:String;
     
     private var mutevol:Number = 1;
     private var ratio:Number;
     
     
     
-    // The random seeking related variables
-    private var offsetSeconds:int = 0;
-    private var offsetPercentage:Number = 0;
-    private var wholeDuration:Number;
+    // The dynamic seeking related variables
+    // 
+    protected var offsetSeconds:int = 0;
+    protected var offsetPercentage:Number = 0;
+    protected var initializedDuration:Number;
     
-    public function get time():Number
-    {
-      return this.offsetSeconds + video_ns.time;
-    }
+    // Fetched seconds of this stream
+    protected var fetchedSeconds:Number = 0;
+    
+    // Video duration of this video
+    private var videoDuration:Number = 0;
+    
     
     private var isVideoPlaying:Boolean = false;
-    public function get isPlaying():Boolean
-    {
-      return isVideoPlaying;
-    }
+    
     
     private var isVideoStopped:Boolean = false;
-    public function get isStopped():Boolean
-    {
-      return isVideoStopped;
-    }
     
     
+    // Replay the video
     public function replay():void
     {
       seek(0, true);
       vplay();
     }
     
+   
     
-    private var _duration:Number = 0;
-    // The set of duration is only called inside this package (to specify the duration from the ClientClass)
-    public function set _dur(value:Number):void
+    // Set the duration
+    // NOTE: It will be only called inside this package
+    //       to specify the duration from a ClientClass
+    public function initializeVCoreDuration(value:Number):void
     {
-      if (!wholeDuration)
+      trace("flush new duration!");
+      videoDuration = value;
+      if (isNaN(initializedDuration))
       {
-        wholeDuration = value;
+        initializedDuration = value;
       }
-      _duration = value;
-    }
-    public function get duration():Number
-    {
-      return _duration;
-    }
-    
-    public function get vLoadPercentage():Number
-    {
-      
-      return offsetPercentage + video_ns.bytesLoaded/video_ns.bytesTotal;
-      /* return this.offset/this.duration + video_ns.bytesLoaded/video_ns.bytesTotal; */
-      
+      else
+      {
+        offsetPercentage = (initializedDuration - value) / initializedDuration;
+        offsetSeconds = initializedDuration - value;
+      }
     }
     
-    public function get volume():Boolean
-    {
-      return (video_ns.soundTransform.volume == 0 ) ? true : false ;
-    }
-    
+    // Set the volume of this video
     public function setVolume(v:Number):void
     {
       var stf:SoundTransform = new SoundTransform();
@@ -129,12 +167,21 @@ package com.wordpress.wpp.core
       video_ns.soundTransform = stf;
     }
     
+    // Get the volume of this video
     public function getVolume():Number
     {
       return video_ns.soundTransform.volume;
     }
     
     // Constructor
+    /**
+     * 
+     * @param _doc     (WPPDocument)
+     * @param _flv_url (String)
+     * @param width    (Number)
+     * @param height   (Number)
+     * 
+     */    
     function VCore(_doc:WPPDocument, _flv_url:String, width:Number, height:Number)
     {
       doc = _doc;
@@ -145,7 +192,6 @@ package com.wordpress.wpp.core
       video_loading = new GUIVideoLoading();
       addChild(video_loading)
       init();
-      
     }
     
     /**
@@ -159,22 +205,31 @@ package com.wordpress.wpp.core
     {
       if (normalSeeking)
       {
+        // Reset the offset position in percentage
         offsetPercentage = 0;
+        
+        // Reset the offset position in second
         offsetSeconds = 0;
+        
+        // Re-initialze the init flv url 
         init_flv_url = _flv_url;
       }
       
       cleanEndStatus();
       
+      // Reset the video variables
+      flv_url = _flv_url;
       video_width = width;
       video_height = height;
       ratio = width/height;
-      video_ns.close();
       
+      // Reset the video instance
       if (this.contains(videoInstance))
         this.removeChild(videoInstance);
       
-      flv_url = _flv_url;
+      
+      // Reset the Net Stream and Net Connection
+      video_ns.close();
       
       video_nc.removeEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
       video_nc.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
@@ -184,6 +239,114 @@ package com.wordpress.wpp.core
       init();
     }
     
+    
+    
+    public function start(flv_url:String):void
+    {
+      video_ns.play(flv_url+"?"+Math.random().toString());
+      videoInstance = new Video(video_width, video_height);
+      videoInstance.width = video_width;
+      videoInstance.height = video_height;
+      videoInstance.attachNetStream(video_ns);
+      videoInstance.smoothing = true;
+      addChild(videoInstance);
+      addChild(video_loading);
+    }
+    
+    public function vplay():void
+    {
+      cleanEndStatus();
+      video_ns.resume();
+      isVideoPlaying = !isVideoPlaying;
+      
+      dispatchCustomEvent(WPPEvents.VCORE_PLAY);
+    }
+     
+    /**
+     * Pause the video
+     * @param isForcePause (Boolean) Whether force the video paused
+     * 
+     */    
+    public function vpause(isForcePause:Boolean = false):void
+    {
+      if (isForcePause)
+      {
+        video_ns.pause();
+        isVideoPlaying = false;
+      }
+      else
+      {
+        video_ns.togglePause();
+        isVideoPlaying = !isVideoPlaying;
+      }
+      dispatchCustomEvent(WPPEvents.VCORE_PAUSED);
+    }
+    
+    // Stop this video, close the Net Stream connection
+    public function vstop():void
+    {
+      video_ns.close();
+    }
+    
+    // Set the volume to zero
+    public function mute():void
+    {
+      mutevol = video_ns.soundTransform.volume;
+      var stf:SoundTransform = new SoundTransform();
+      stf.volume = 0;
+      video_ns.soundTransform = stf;
+    }
+    
+    // Set the volume back
+    public function speaker():void
+    {
+      var stf:SoundTransform = new SoundTransform();
+      stf.volume = mutevol;
+      video_ns.soundTransform = stf;
+    }
+    
+    /**
+     * 
+     * @param seekTime     (Number)  Seek this time in the current video
+     * @param isReplay (Boolean) Will be true only when the user
+     *                 clicks the play button at the menu screen.
+     * 
+     */    
+    public function seek(seekTime:Number, isReplay:Boolean = false):void
+    {
+      // Whether we can seek this video
+      if(initializedDuration == 0 || isNaN(initializedDuration)) 
+      {
+        return;
+      }
+      // Kill the stop status
+      cleanEndStatus();
+      // Get the fetched position in second
+      fetchedSeconds = vLoadPercentage * initializedDuration - offsetSeconds;
+      if (isReplay)
+      {
+        // Seek From Replay Button
+        if (offsetSeconds == 0)
+        {
+          video_ns.seek(0);
+        }
+        else
+        {
+          playFLV(init_flv_url, width, height, true);
+        }
+      }
+      else if ( seekTime - offsetSeconds < fetchedSeconds && seekTime > offsetSeconds )
+      {
+        video_ns.seek(seekTime-offsetSeconds);
+      }
+      else
+      {
+        // VCoreDynamicSeeking class will implement this section
+        return;
+      }
+    }
+    
+    // Init function
     private function init():void
     {
       video_loading.visible = true;
@@ -267,47 +430,6 @@ package com.wordpress.wpp.core
       }
     }
     
-    /**
-     * 
-     * @param t Number, the time to seek
-     * @param isReplay Boolean, will be true only when the user
-     *        clicks the play button at the menu screen.
-     * 
-     */    
-    public function seek(t:Number, isReplay:Boolean = false):void
-    {
-      // Whether we can seek this video
-      if(wholeDuration == 0 || isNaN(wholeDuration)) 
-      {
-        //trace('whole duration = 0 ERROR or cannot seek');
-        return;
-      }
-      // Kill the stop status
-      cleanEndStatus();
-      var fetchedSeconds:Number = vLoadPercentage * wholeDuration - offsetSeconds;
-      if (isReplay)
-      {
-        // Seek From Replay Button
-        if (offsetSeconds == 0)
-        {
-          video_ns.seek(0);
-        }
-        else
-        {
-          playFLV(init_flv_url, width, height, true);
-        }
-        
-      }
-      else if ( t - offsetSeconds < fetchedSeconds && t > offsetSeconds )
-      {
-        video_ns.seek(t-offsetSeconds);
-      }
-      else
-      {
-        return;
-      }
-    }
-    
     // Kill the stop status
     private function cleanEndStatus():void
     {
@@ -324,70 +446,6 @@ package com.wordpress.wpp.core
     {
       alpha = isCurtainOn ? WPPConfiguration.VCORE_CURTAIN_ALPHA : 1;
     }
-
-    public function start(flv_url:String):void
-    {
-      video_ns.play(flv_url);
-      videoInstance = new Video(video_width, video_height);
-      videoInstance.width = video_width;
-      videoInstance.height = video_height;
-      videoInstance.attachNetStream(video_ns);
-      videoInstance.smoothing = true;
-      addChild(videoInstance);
-      addChild(video_loading);
-    }
-    
-    public function vplay():void
-    {
-      cleanEndStatus();
-      video_ns.resume();
-      isVideoPlaying = !isVideoPlaying;
-      
-      dispatchCustomEvent(WPPEvents.VCORE_PLAY);
-    }
-    
-    public function vpause(b:Boolean = false):void
-    {
-      if (!b)
-      {
-        video_ns.togglePause();
-        isVideoPlaying = !isVideoPlaying;
-      }
-      else
-      {
-        video_ns.pause();
-        isVideoPlaying = false;
-      }
-      dispatchCustomEvent(WPPEvents.VCORE_PAUSED);
-    }
-    
-    public function vstop():void
-    {
-      video_ns.close();
-    }
-    
-    
-    public function mute():void
-    {
-      mutevol = video_ns.soundTransform.volume;
-      var stf:SoundTransform = new SoundTransform();
-      stf.volume = 0;
-      video_ns.soundTransform = stf;
-    }
-    public function speaker():void
-    {
-      var stf:SoundTransform = new SoundTransform();
-      stf.volume = mutevol;
-      video_ns.soundTransform = stf;
-    }
-    
-    
-    
-    // The listeners for our events
-    private function asyncErrorHandler(event:AsyncErrorEvent):void
-    {
-    }
-    
     
     private function netStatusHandler(event:NetStatusEvent):void
     {
@@ -450,8 +508,16 @@ package com.wordpress.wpp.core
     }
     
     
+    // The listeners for our events
+    private function asyncErrorHandler(event:AsyncErrorEvent):void
+    {
+    }
+    
+    
+    
     private function securityErrorHandler(event:SecurityErrorEvent):void
     {
+      
     }
     
   }
@@ -462,7 +528,7 @@ class ClientDispatcher
 {
   public function onMetaData (info:Object):void
   {
-    vc._dur = info.duration;
+    vc.initializeVCoreDuration(info.duration);
   }
   public function onCuePoint (info:Object):void
   {

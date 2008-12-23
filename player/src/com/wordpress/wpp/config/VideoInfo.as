@@ -24,7 +24,7 @@ package com.wordpress.wpp.config
     public var status_interval:Number;
     public var status_url:String;
     
-    public var volume:Number;
+    public var volume:Number = WPPConfiguration.DEFAULT_VOLUME/100;
     public var isPrivate:Boolean;
     public var isLogin:Boolean;
     

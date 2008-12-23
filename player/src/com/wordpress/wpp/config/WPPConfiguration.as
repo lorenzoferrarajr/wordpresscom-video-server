@@ -27,6 +27,11 @@ package com.wordpress.wpp.config
     // Default const data
     // The default guid
     public static var DEFAULT_GUID:String = "MvIhraHG";
+    
+    // The default volume (when it is not given via the XML file)
+    // Should always be a number of [0,100]
+    public static var DEFAULT_VOLUME:Number = 80;
+    
     // The default autoplay value
     public static var AUTOPLAY_WHEN_LOADED:Boolean = false;
 

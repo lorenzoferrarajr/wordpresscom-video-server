@@ -415,30 +415,6 @@ package
       toggleController(false);
     }
     
-    /**
-     * Fade the controller 
-     * 
-      
-    public function fadeController():void
-    {
-      // 1 - Whether we are in Full Screen mode, if yes, hide the mouse
-      if (this.stage.displayState == "fullScreen")
-      {
-        Mouse.hide();
-      }
-      
-      // 2 - Hide the controller
-      controllerFader = new Fader(guiCtr, 10);
-      
-      // 3 - Hide the embed assets if exists
-      if (info.embededCode)
-      {
-        embedmainFader = new Fader(embedManager.embedMain,10);
-        embedtoggleFader = new Fader(embedManager.toggleButton,10)
-      }
-      
-    }
-    */
     public function toggleController(isShowController:Boolean):void
     {
       if (isShowController)
@@ -483,34 +459,6 @@ package
       }
     }
     
-    /**
-     * Show the controller 
-     * 
-     
-    public function showController():void
-    {
-      // 1 - Show the mouse
-      Mouse.show();
-      
-      // 2 - halt the controller fader
-      controllerFader.abort();
-      guiCtr.alpha = 1;
-      guiCtr.visible = true;
-      
-      // 3 - halt the embed assets  
-      if (info.embededCode)
-      {
-        embedmainFader.abort();
-        embedtoggleFader.abort();
-        embedManager.embedMain.alpha = 1;
-        embedManager.toggleButton.alpha = 1;
-        embedManager.toggleButton.visible = true;
-        addChild(embedManager.embedMain);
-        addChild(embedManager.toggleButton);
-      }
-    }
-    */
-        
     /**
      * When the mouse enters the stage from outside area, show the controller sets 
      * @param eevent
@@ -559,6 +507,17 @@ package
         WPPConfiguration.AUTOPLAY_WHEN_LOADED = false;
       }
       
+      WPPConfiguration.IS_LOCAL_MODE = false;
+      
+      if (root.loaderInfo.parameters["dynamicseek"] == "yes")
+      {
+        WPPConfiguration.isDynamicSeeking = true;
+      }
+      else
+      {
+        WPPConfiguration.isDynamicSeeking = false;
+      }
+      
       if (root.loaderInfo.parameters["localmode"]=="yes" || WPPConfiguration.isLocalPlayer(this))
       {
         WPPConfiguration.IS_LOCAL_MODE = true;
@@ -567,6 +526,7 @@ package
       {
         WPPConfiguration.IS_LOCAL_MODE = false; 
       }
+      
     }
     
     // Kill the splash thing

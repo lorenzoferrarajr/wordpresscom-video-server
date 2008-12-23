@@ -7,12 +7,23 @@ package com.wordpress.wpp.core
       super(_doc, _flv_url, width, height);
     }
     
-    override public function seek(t:Number, isReplay:Boolean=false):void
+    override public function seek(seekTime:Number, isReplay:Boolean=false):void
     {
-      trace("time:"+t.toString()+"isReplay"+isReplay.toString());
-      super.seek(t,isReplay);
+      trace("time:"+seekTime.toString()+"isReplay"+isReplay.toString());
+      super.seek(seekTime, isReplay);
+      if (seekTime < offsetSeconds || seekTime - offsetSeconds > fetchedSeconds)
+      {
+        trace("seekTime:       "+seekTime);
+        trace("offsetSeconds:  "+offsetSeconds);
+        trace("fetchedSeconds: "+fetchedSeconds);
+        offsetSeconds = int(seekTime);
+        playFLV(init_flv_url+"?offset="+offsetSeconds.toString(),
+                video_width, video_height, false);
+      }
+      
+      return;
+      
     }
-    
     
   }
 }

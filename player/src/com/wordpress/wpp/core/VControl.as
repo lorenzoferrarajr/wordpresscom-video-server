@@ -40,14 +40,12 @@ package com.wordpress.wpp.core
     
     /**
      * 
-     * @param guiCtr    The GUIControl instance, including all the essential assets 
-     * @param vTarget    The VCore instance, on which will the controller implment
-     * @param doc      The Document Class ( Maybe we will remove it later )  
-     * @param initVolume  The volume number at start
-     * @param vslider    The Video Slider
-     * @param volslider    The Volume Slider
+     * @param guiCtr      (GUIControl)     The GUIControl instance, including all the essential assets 
+     * @param vTarget     (VCore)          The VCore instance, on which will the controller implment
+     * @param vslider     (UIVideoSlider)  The Video Slider
+     * @param volslider   (UIVolumeSlider) The Volume Slider
      * 
-     */
+     */   
     function VControl(guiCtr:GUIControl, vTarget:VCore, vslider:UIVideoSlider, volslider:UIVolumeSlider) 
     {
       super(guiCtr);
@@ -57,21 +55,29 @@ package com.wordpress.wpp.core
       videoSlider = vslider;
       volumeSlider = volslider;
 
+      // Set the volume to a given value
       setVideoVolume(doc.info.volume);
-      // Initialize
-      // Config Listeners
+      
+      // Initialize listeners
       initListeners();
 
     }
-
-      
-
-
+    
+    /**
+     * Get the value of the volume slider 
+     * @return 
+     * 
+     */    
     public function get volume():Number
     {
       return this.volumeSlider.volume;
     }
     
+    /**
+     * Triggered when the video is paused 
+     * @param event
+     * 
+     */    
     private function togglePauseHandler(event:Event):void
     {
       if (v.isPlaying)

@@ -65,6 +65,7 @@ package com.wordpress.wpp.utils
       // startTimer();
     }
     
+    // Resume the stats reporter interval
     public function resume():void
     {
       playingTimer.start();
