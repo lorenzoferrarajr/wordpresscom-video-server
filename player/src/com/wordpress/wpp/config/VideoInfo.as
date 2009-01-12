@@ -21,6 +21,8 @@ package com.wordpress.wpp.config
     public var mainAvatar:String;
     public var mainDescription:String;
     
+    public var rating:String;
+    
     public var status_interval:Number;
     public var status_url:String;
     

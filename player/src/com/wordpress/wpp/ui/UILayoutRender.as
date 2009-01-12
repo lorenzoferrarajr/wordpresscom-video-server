@@ -24,7 +24,16 @@ package com.wordpress.wpp.ui
   
   public class UILayoutRender
   {
-
+    public static const LEFT:String = "left";
+    public static const RIGHT:String = "right";
+    public static const TOP:String = "top";
+    public static const BOTTOM:String = "bottom";
+    public static const WIDTH:String = "width";
+    public static const HEIGHT:String = "height";
+    public static const CENTERX:String = "centerx";
+    public static const CENTERY:String = "centery";
+    public static const MARGIN_RIGHT:String = "marginright"
+    
     private var s:Stage;
     private var o:Object;
     private var tar:DisplayObject;
@@ -33,6 +42,8 @@ package com.wordpress.wpp.ui
     private var globalOffsetX:int = 0;
     private var globalOffsetY:int = 0;
     private var isSeekBar:Boolean = false;
+    
+    
     
     /**
      * 
@@ -80,7 +91,7 @@ package com.wordpress.wpp.ui
     }
     
     private function renderObj():void
-    {  
+    {
       var m:String;
       var style:String;
       var value:*;
@@ -96,7 +107,7 @@ package com.wordpress.wpp.ui
             vseektar.y = Math.round(s.stageHeight - value - tar.height)+25;
             break;
             
-            case "marginright":
+            case MARGIN_RIGHT:
             var newWidth:Number = s.stageWidth - vseektar.parent.x - vseektar.x - value-5;
             vseektar._seek_current.width = newWidth;
             vseektar._seek_loader.load_width = newWidth;
@@ -116,36 +127,36 @@ package com.wordpress.wpp.ui
             }  
             break;
             
-            case "left":
+            case LEFT:
             tar.x = getLocalX((value));
             break;
             
-            case "right":
+            case RIGHT:
             tar.x = getLocalX(Math.round(s.stageWidth - value - tar.width));
             break;
             
-            case "top":
+            case TOP:
             tar.y = Math.round(value);
             break;
             
-            case "bottom":
+            case BOTTOM:
             tar.y = getLocalY(Math.round(s.stageHeight - value - tar.height));
             break;
             
-            case "width":
+            case WIDTH:
             tar.width = s.stageWidth - o.marginLeft - o.marginRight;
             tar.x = o.marginLeft;
             break;
             
-            case "height":
+            case HEIGHT:
             tar.height = s.stageHeight;
             break;
             
-            case "centerx":
+            case CENTERX:
             tar.x = getLocalX(Math.round((s.stageWidth - tar.width)/2 + value));
             break;
             
-            case "centery":
+            case CENTERY:
             tar.y = getLocalY(Math.round((s.stageHeight - tar.height)/2 + value));
             break;
             
@@ -161,36 +172,36 @@ package com.wordpress.wpp.ui
           value = o[m];
           switch (style)
           {
-            case "left":
+            case LEFT:
             tar.x = (value);
             break;
             
-            case "right":
+            case RIGHT:
             tar.x = Math.round(s.stageWidth - value - tar.width);
             break;
             
-            case "top":
+            case TOP:
             tar.y = Math.round(value);
             break;
             
-            case "bottom":
+            case BOTTOM:
             tar.y = Math.round(s.stageHeight - value - tar.height);
             break;
             
-            case "width":
+            case WIDTH:
             tar.width = s.stageWidth - o.marginLeft - o.marginRight;
             tar.x = o.marginLeft;
             break;
             
-            case "height":
+            case HEIGHT:
             tar.height = s.stageHeight;
             break;
             
-            case "centerx":
+            case CENTERX:
             tar.x = Math.round((s.stageWidth - tar.width)/2 + value);
             break;
             
-            case "centery":
+            case CENTERY:
             tar.y = Math.round((s.stageHeight - tar.height)/2 + value);
             break;
             

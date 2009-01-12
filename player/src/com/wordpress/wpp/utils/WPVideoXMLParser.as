@@ -85,6 +85,11 @@ package com.wordpress.wpp.utils
         videoInfo.volume = Number(xmlData.video.default_volume.toString())/100;
       }
       
+      if (xmlData.video.rating.toString() != "")
+      {
+        videoInfo.rating = xmlData.video.rating;
+      }
+      
       // meta info of the video from the XML
       videoInfo.mainUser = xmlData.video.username.toString();
       videoInfo.mainAvatar = xmlData.video.avatar.toString();

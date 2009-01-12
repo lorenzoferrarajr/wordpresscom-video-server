@@ -28,6 +28,7 @@ package com.wordpress.wpp.ui
      * @param target Instance of the target DisplayObject 
      * @param obj Information about the layout
      * 
+     * Note: The target must be added on the display list already!
      */      
     public static function addTarget(target:DisplayObject, obj:Object ):void
     {

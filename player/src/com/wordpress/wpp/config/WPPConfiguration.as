@@ -19,10 +19,8 @@ package com.wordpress.wpp.config
   // we can dynamically modify these values.
   public class WPPConfiguration
   {
-    
     // Video settings
     public static var VCORE_CURTAIN_ALPHA:Number = .25;
-    
     
     // Default const data
     // The default guid
@@ -37,12 +35,17 @@ package com.wordpress.wpp.config
 
     // Whether the backend support "dynamic(random) seeking"
     // WARNING: Set to false when your server doesn't support dynamic seeking
-    public static var isDynamicSeeking:Boolean = true;
+    public static var IS_DYNAMIC_SEEKING:Boolean = true;
+    
+    // Whether to show the age verification screen in the splash screen
+    // Default is true (do the verification)
+    public static var VERIFY_USER_AGE:Boolean = true;
     
     // Local player configurations   
-    public static var IS_LOCAL_MODE:Boolean = false; 
+    public static var IS_LOCAL_MODE:Boolean = false;
     public static var LOCAL_MODE_PATH:String = "clips";
     public static var LOCAL_MODE_XML_FILENAME:String = "video.xml"; 
+    
     
     
     // The URL of video information's XML data source base

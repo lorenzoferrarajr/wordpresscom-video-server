@@ -19,6 +19,7 @@ package
   import com.wordpress.wpp.core.VCoreDynamicSeeking;
   import com.wordpress.wpp.events.WPPEvents;
   import com.wordpress.wpp.gui.*;
+  import com.wordpress.wpp.ui.UIAgeChecker;
   import com.wordpress.wpp.ui.UIEndScreen;
   import com.wordpress.wpp.ui.UILayoutManager;
   import com.wordpress.wpp.ui.UISplashControl;
@@ -82,19 +83,10 @@ package
     private var hdManager:HDManager;
     
     /**
-     * Whether to play the video as soon as the player is loaded
-     * TODO: If we set autoplay to true, then play the video at once (NOTICE: THIS FEATURE NEEDS THE USER TO SPECIFY A FLV PATH AS WELL BECAUSE WE WILL NOT ASK THE XML FOR IT)
-     * 
-     */
-    private var autoplay:Boolean;
-    
-    /**
      * The default guid of a video if no guid is given externally
      * 
      */    
     private var guid:String;
-    
-    
 
     /**
      * Embed pop-up manager instance 
@@ -187,8 +179,6 @@ package
       loadExternalSettings();
       
       guid = WPPConfiguration.DEFAULT_GUID;
-      autoplay = WPPConfiguration.AUTOPLAY_WHEN_LOADED;
-      
       // Init the context menu
       var wpContextMenu:WPContextMenu = new WPContextMenu(this);
       
@@ -206,7 +196,6 @@ package
       
       // Fires when the user asks to play
       splashScreen.addEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
-    
     }
     
     /**
@@ -239,8 +228,13 @@ package
       hdManager.renderHDButtons(splashControl, guiCtr);
       turnOffHD();
       
+      if (info.rating != "" && info.rating)
+      {
+        WPPConfiguration.VERIFY_USER_AGE = true;
+      }
+      
       // If the autoplay flag is true, play the video at once
-      if (autoplay)
+      if (WPPConfiguration.AUTOPLAY_WHEN_LOADED && !WPPConfiguration.VERIFY_USER_AGE)
       {
         playMainVideo(info);
       }
@@ -251,6 +245,13 @@ package
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_ON_HD, splashHDOnHandler);
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_OFF_HD, splashHDOffHandler);
       }
+      
+      if(WPPConfiguration.VERIFY_USER_AGE)
+      {
+        var ageChecker:UIAgeChecker = new UIAgeChecker(this);
+        
+      }
+      
     }
     
     /**
@@ -318,7 +319,7 @@ package
       statsReporter.videoView();
       
       // VCore instance handles almost all the core playing mechanism
-      if (WPPConfiguration.isDynamicSeeking)
+      if (WPPConfiguration.IS_DYNAMIC_SEEKING)
       {
         mainVideo = new VCoreDynamicSeeking(this, vo.movie_file, vo.width, vo.height);
       }
@@ -497,7 +498,9 @@ package
       canvasHeight = this.stage.stageHeight;
       if (root.loaderInfo.parameters["canvasheight"])
         canvasHeight = root.loaderInfo.parameters["canvasheight"];
-        
+      
+      
+      // Whether to play the video at once when it's loaded
       if (root.loaderInfo.parameters["autoplay"]=="yes")
       {
         WPPConfiguration.AUTOPLAY_WHEN_LOADED = true;
@@ -507,15 +510,23 @@ package
         WPPConfiguration.AUTOPLAY_WHEN_LOADED = false;
       }
       
-      WPPConfiguration.IS_LOCAL_MODE = false;
-      
-      if (root.loaderInfo.parameters["dynamicseek"] == "yes")
+      // Whether to show the age-verification screen in the splash screen
+      if (root.loaderInfo.parameters["verifyage"]=="yes")
       {
-        WPPConfiguration.isDynamicSeeking = true;
+        WPPConfiguration.VERIFY_USER_AGE = true;
       }
       else
       {
-        WPPConfiguration.isDynamicSeeking = false;
+        WPPConfiguration.VERIFY_USER_AGE = false;
+      }
+      
+      if (root.loaderInfo.parameters["dynamicseek"] == "yes")
+      {
+        WPPConfiguration.IS_DYNAMIC_SEEKING = true;
+      }
+      else
+      {
+        WPPConfiguration.IS_DYNAMIC_SEEKING = false;
       }
       
       if (root.loaderInfo.parameters["localmode"]=="yes" || WPPConfiguration.isLocalPlayer(this))

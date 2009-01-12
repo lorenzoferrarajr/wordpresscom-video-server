@@ -10,6 +10,9 @@ package com.wordpress.wpp.events
 		// Dispatched when the slash screen is generated
 		public static const SPLASH_SCREEN_INIT:String = "splashScreenInit";
 		
+		// Dispatched when the user confirms his birth date
+		public static const SPLASH_AGE_VERIFICATION:String = "splashAgeVerification"
+		
 		// Dispatched when the user start playing the video in a splash screen
 		public static const SPLASH_VIDEO_PLAY:String = "splashVideoPlay";
 		
@@ -18,6 +21,8 @@ package com.wordpress.wpp.events
 		
 		// Dispatched when the user switches to a normal definition resoltuion in splash screen
 		public static const SPLASH_TURN_OFF_HD:String = "splashTurnOffHD";
+		
+		
 		
 		// These events may be used in VCore+VControl for the main logic
 		

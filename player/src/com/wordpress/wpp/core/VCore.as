@@ -243,7 +243,8 @@ package com.wordpress.wpp.core
     
     public function start(flv_url:String):void
     {
-      video_ns.play(flv_url+"?"+Math.random().toString());
+      video_ns.play(flv_url);
+      trace(flv_url);
       videoInstance = new Video(video_width, video_height);
       videoInstance.width = video_width;
       videoInstance.height = video_height;
@@ -487,9 +488,9 @@ package com.wordpress.wpp.core
           video_message.width = 300;
           var format:TextFormat = new TextFormat();
           format.font = "Verdana";
-                format.color = 0xffffff;
-                format.size = 14;
-                video_message.setTextFormat(format);
+          format.color = 0xffffff;
+          format.size = 14;
+          video_message.setTextFormat(format);
           addChild(video_message);
           UILayoutManager.addTarget(video_message,{
             "centerx":0,
