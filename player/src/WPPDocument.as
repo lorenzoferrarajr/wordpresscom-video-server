@@ -86,7 +86,7 @@ package
      * The default guid of a video if no guid is given externally
      * 
      */    
-    private var guid:String;
+    private var guid:String = WPPConfiguration.DEFAULT_GUID;
 
     /**
      * Embed pop-up manager instance 
@@ -178,7 +178,6 @@ package
       // Load the settings from HTML (where the flashplayer embeded)
       loadExternalSettings();
       
-      guid = WPPConfiguration.DEFAULT_GUID;
       // Init the context menu
       var wpContextMenu:WPContextMenu = new WPContextMenu(this);
       
