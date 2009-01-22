@@ -3,8 +3,8 @@
  * @class       com.wordpress.wpp.ui.UILayoutManager
  *
  * @description   
- * @author      automattic
- * @created:     Jul 19, 2008
+ * @author        automattic
+ * @created:      Jul 19, 2008
  * @modified:     Sep 14, 2008  
  *   
  */

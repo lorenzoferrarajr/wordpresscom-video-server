@@ -213,19 +213,30 @@ package
       // Show the controller.
       guiCtr.visible = true;
       guiCtr.initFrameHandler();
-
+      
       embedManager = new EmbedManager(this);
       embedManager.initEmbedding();
       
       // Setup the controller
       splashControl = new UISplashControl(guiCtr);
-      statsReporter = new StatsReport(info.status_url, info.status_interval, this);
-      statsReporter.videoImpression();
       
       // Setup up the HD Manager
       hdManager = new HDManager(this);
       hdManager.renderHDButtons(splashControl, guiCtr);
       turnOffHD();
+
+      // Setup the stats reporter
+      statsReporter = new StatsReport(info.status_url, info.status_interval, this);
+      statsReporter.videoImpression();
+      
+      if (info.mainDuration == 0)
+      {
+        max_report_time = 120;
+      }
+      else
+      {
+        max_report_time = info.mainDuration + 10;
+      }
       
       if (info.rating != "" && info.rating)
       {
@@ -248,7 +259,6 @@ package
       if(WPPConfiguration.VERIFY_USER_AGE)
       {
         var ageChecker:UIAgeChecker = new UIAgeChecker(this);
-        
       }
       
     }
@@ -320,10 +330,12 @@ package
       // VCore instance handles almost all the core playing mechanism
       if (WPPConfiguration.IS_DYNAMIC_SEEKING)
       {
+        trace("new VCoreDynamicSeeking");
         mainVideo = new VCoreDynamicSeeking(this, vo.movie_file, vo.width, vo.height);
       }
       else
       {
+        trace("new VCore");
         mainVideo = new VCore(this, vo.movie_file, vo.width, vo.height);
       }
 
@@ -542,11 +554,11 @@ package
     // Kill the splash thing
     private function killSplashScreen():void
     {
-      splashScreen.unregisterSplashScreen();
+      splashScreen.unregister();
       splashScreen.removeEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
       splashScreen.removeEventListener(WPPEvents.SPLASH_SCREEN_INIT, initMainVideoHandler);
       
-      splashControl.unregisterSplashControl();
+      splashControl.unregister();
       splashControl.removeEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
       
       splashControl.removeEventListener(WPPEvents.SPLASH_TURN_ON_HD, splashHDOnHandler);

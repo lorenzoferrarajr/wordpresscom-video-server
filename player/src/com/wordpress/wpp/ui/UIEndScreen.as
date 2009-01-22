@@ -4,8 +4,8 @@
  * @deprecated  com.wordpress.wpp.ui.UIMenuScreen
  *
  * @description   
- * @author      automattic
- * @created:     Aug 14, 2008
+ * @author        automattic
+ * @created:      Aug 14, 2008
  * @modified:     Sep 09, 2008  
  *   
  */
@@ -43,7 +43,7 @@ package com.wordpress.wpp.ui
      * Remove the listeners/instances for end screen 
      * 
      */    
-    public function unregisterEndScreen():void
+    public function unregister():void
     {
       trace("REMOVING");
       doc.removeChild(replayButton);

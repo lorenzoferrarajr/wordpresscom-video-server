@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.gui
  * @class       com.wordpress.wpp.gui.GUIVideoLoading
  *
- * @description   
- * @author      automattic
- * @created:     Aug 19, 2008
+ * @description   (linkage via FLA) Video Loading wheel
+ * @author        automattic
+ * @created:      Aug 19, 2008
  * @modified:     Sep 09, 2008  
  *   
  */

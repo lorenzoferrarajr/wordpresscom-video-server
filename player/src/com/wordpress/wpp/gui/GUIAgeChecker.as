@@ -1,3 +1,13 @@
+/**
+ * @package     com.wordpress.wpp.gui
+ * @class       com.wordpress.wpp.gui.GUIAgeChecker
+ *
+ * @description   (linkage via FLA) Age verification components
+ * @author        automattic
+ * @created:      Jan 10, 2009
+ * @modified:     Jan 22, 2009
+ *   
+ */
 package com.wordpress.wpp.gui
 {
   import com.wordpress.wpp.events.ObjectEvent;
@@ -31,6 +41,9 @@ package com.wordpress.wpp.gui
       this.addEventListener(Event.ADDED_TO_STAGE, initHandler);
     }
     
+    public function unregister():void {
+      submitButton.removeEventListener(MouseEvent.CLICK, checkBirthHandler);
+    }
     
     private function initHandler(event:Event):void
     {
@@ -61,6 +74,26 @@ package com.wordpress.wpp.gui
       dayComboBox.addItem({"label":""});
       dayComboBox.addItem({"label":""});
       dayComboBox.addItem({"label":""});
+      
+      var resizeHandler:Function = function(event:Event)
+      {
+        if (stage.stageHeight < 300)
+        {
+          yearComboBox.rowCount = 3;
+          monthComboBox.rowCount = 3;
+          dayComboBox.rowCount = 3;
+        }
+        else
+        {
+          yearComboBox.rowCount = 5;
+          monthComboBox.rowCount = 5;
+          dayComboBox.rowCount = 5;
+        }
+        yearComboBox.close();
+        monthComboBox.close();
+        dayComboBox.close();
+      }
+      this.stage.addEventListener(Event.RESIZE, resizeHandler);
       
       // Year combobox
       var dp_year:DataProvider = new DataProvider();
@@ -139,10 +172,11 @@ package com.wordpress.wpp.gui
     
     private function checkBirthHandler(event:MouseEvent):void
     {
-      
-      var selectedDate:Date = new Date(yearComboBox.selectedItem.value, monthComboBox.selectedItem.value, dayComboBox.selectedItem.value);
-      var age:Number = getAge(selectedDate);
-      var ageEvent:ObjectEvent = new ObjectEvent(WPPEvents.SPLASH_AGE_VERIFICATION, age);
+      var userSpecifiedAge:Object = {
+          year : yearComboBox.selectedItem.value,
+          month : monthComboBox.selectedItem.value,
+          day : dayComboBox.selectedItem.value};
+      var ageEvent:ObjectEvent = new ObjectEvent(WPPEvents.SPLASH_AGE_VERIFICATION, userSpecifiedAge);
       dispatchEvent(ageEvent);
     }
     

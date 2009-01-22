@@ -78,19 +78,26 @@ package com.wordpress.wpp.core
      * @param event
      * 
      */    
-    private function togglePauseHandler(event:Event):void
+    private function togglePauseHandler(event:ObjectEvent):void
     {
+      trace("togglePauseHandler:"+event.data);
       if (v.isPlaying)
       {
         play_btn.visible = false;
         pause_btn.visible = true;
-        doc.statsReporter.resume();
+        if (event.data) {
+          //trace("send")
+          doc.statsReporter.resume();
+        }
       }
       else
       {
         play_btn.visible = true;
         pause_btn.visible = false;
-        doc.statsReporter.hold();
+        //trace("hold - togglePauseHandler"+event.type);
+        if (!event.data) {
+          doc.statsReporter.hold();
+        }
       }
     }
     

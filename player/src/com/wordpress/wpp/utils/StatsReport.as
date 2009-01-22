@@ -32,13 +32,16 @@ package com.wordpress.wpp.utils
     
     public function videoView():void
     {
+      //trace("video_play!!!");
+      //ExternalInterface.call("console.info", "video_play: "+com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE.toString());
       var targetURL:String = stats_url_base+"&page_url="+GetDomain.getDomain()+"&video_play=1&rand="+Math.random().toString();
       var r:URLRequest = new URLRequest(targetURL);
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      if (!WPPConfiguration.IS_LOCAL_MODE)
       {
+        //trace("video_play sent to: "+r.url);
         l.load(r);
       }
       startTimer();
@@ -57,22 +60,18 @@ package com.wordpress.wpp.utils
       // 2 - Setup a timer (once/1sec)
       playingTimer = new Timer(1000);
       playingTimer.addEventListener(TimerEvent.TIMER,timerHandler);
-      
-      // 3 - Send a "video view" report at once.
-      // videoView();  
-      
-      // 4 - start the video timer; 
-      // startTimer();
     }
     
     // Resume the stats reporter interval
     public function resume():void
     {
+      trace("start.resume()");
       playingTimer.start();
     }
     
     public function hold():void
     {
+      trace("statreport.hold()");
       playingTimer.stop();
       sendTimerRequest();
       resetCheckTime();
@@ -80,13 +79,16 @@ package com.wordpress.wpp.utils
     
     public function videoImpression():void
     {
+      //trace("video impression");
+      //ExternalInterface.call("console.info", "impression: "+WPPConfiguration.IS_LOCAL_MODE.toString());
       var targetURL:String = stats_url_base+"&page_url="+GetDomain.getDomain()+"&rand="+Math.random().toString()+"&video_impression=1";
       var r:URLRequest = new URLRequest(targetURL);
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      if (!WPPConfiguration.IS_LOCAL_MODE)
       {
+        //ExternalInterface.call("console.info","video impression sent to: "+r.url);
         l.load(r);
       }
     }
@@ -94,17 +96,20 @@ package com.wordpress.wpp.utils
     private function startTimer():void
     {
       resetCheckTime();
+      trace("startTimer()");
       playingTimer.start();
     }
     
     private function timerHandler(event:TimerEvent):void
     {
+      
       checkTime = checkTime+1;
       if (checkTime >= interval)
       {
         sendTimerRequest(int(interval));
         resetCheckTime();
       }
+      trace("TIMER:"+checkTime);
     }
     
     private function resetCheckTime():void
@@ -135,7 +140,6 @@ package com.wordpress.wpp.utils
      */    
     private function sendTimerRequest(t:int = -1):void
     {
-      
       // 0 - If the "t" is not specified, send the checkTime to server.
       if (t==-1)
       {
@@ -151,14 +155,14 @@ package com.wordpress.wpp.utils
       {
         return;
       }
-
       // 3 - Send!
+      trace("timer:"+t);
       var targetURL:String = stats_url_base+"&page_url="+GetDomain.getDomain()+"&rand="+Math.random().toString()+"&t="+t.toString();
       var r:URLRequest = new URLRequest(targetURL);
       var l:URLLoader = new URLLoader();
       l.addEventListener(IOErrorEvent.IO_ERROR,function():void{});
       l.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityEventHandler);
-      if (!com.wordpress.wpp.config.WPPConfiguration.IS_LOCAL_MODE)
+      if (!WPPConfiguration.IS_LOCAL_MODE)
       {
         l.load(r);
       }

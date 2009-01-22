@@ -3,8 +3,8 @@
  * @class       com.wordpress.wpp.ui.UISlider
  *
  * @description   
- * @author      automattic
- * @created:     Aug 14, 2008
+ * @author        automattic
+ * @created:      Aug 14, 2008
  * @modified:     Sep 09, 2008  
  *   
  */
@@ -124,7 +124,7 @@ package com.wordpress.wpp.ui
      * Remove the listeners for splash control use
      * 
      */    
-    public function unregisterSplashControl():void
+    public function unregister():void
     {
       play_btn.removeEventListener(MouseEvent.CLICK, playButtonHandler);
       videoSlider.removeEventListener (WPPEvents.SLIDER_SEEKING, seekVideoHandler);

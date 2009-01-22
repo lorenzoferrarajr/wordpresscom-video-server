@@ -1,4 +1,14 @@
-﻿package com.wordpress.wpp.gui
+﻿/**
+ * @package     com.wordpress.wpp.gui
+ * @class       com.wordpress.wpp.gui.GUIEmbedMain
+ *
+ * @description   (linkage via FLA) The embedding components
+ * @author        automattic
+ * @created:      Aug 14, 2008
+ * @modified:     Sep 09, 2008  
+ *   
+ */
+package com.wordpress.wpp.gui
 {
   import flash.display.MovieClip;
   import flash.text.TextField;

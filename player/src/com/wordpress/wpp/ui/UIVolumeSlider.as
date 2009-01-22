@@ -3,8 +3,8 @@
  * @class       com.wordpress.wpp.ui.UISlider
  *
  * @description   
- * @author      automattic
- * @created:     Jul 30, 2008
+ * @author        automattic
+ * @created:      Jul 30, 2008
  * @modified:     Sep 09, 2008  
  *   
  */

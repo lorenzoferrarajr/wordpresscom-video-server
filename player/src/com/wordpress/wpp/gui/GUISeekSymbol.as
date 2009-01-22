@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.gui
  * @class       com.wordpress.wpp.gui.GUISeekSymbol
  *
- * @description   
- * @author      automattic
- * @created:     Jul 27, 2008
+ * @description   (linkage via FLA) Seek symbol
+ * @author        automattic
+ * @created:      Jul 27, 2008
  * @modified:     Sep 09, 2008  
  *   
  */

@@ -1,3 +1,13 @@
+/**
+ * @package     com.wordpress.wpp.gui
+ * @class       com.wordpress.wpp.gui.GUISeekLoadSymbol
+ *
+ * @description   (linkage via FLA) The bar to hold loading texture
+ * @author        automattic
+ * @created:      Aug 14, 2008
+ * @modified:     Sep 09, 2008  
+ *   
+ */
 package com.wordpress.wpp.gui
 {
   import flash.display.Bitmap;

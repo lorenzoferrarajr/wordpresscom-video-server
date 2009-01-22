@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.gui
  * @class       com.wordpress.wpp.gui.GUIVolumeSeek
  *
- * @description   
- * @author      automattic
- * @created:     Aug 04, 2008
+ * @description   (linkage via FLA) Volume seeking components
+ * @author        automattic
+ * @created:      Aug 04, 2008
  * @modified:     Sep 09, 2008  
  *   
  */

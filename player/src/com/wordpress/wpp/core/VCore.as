@@ -13,6 +13,7 @@
 package com.wordpress.wpp.core
 {
   import com.wordpress.wpp.config.WPPConfiguration;
+  import com.wordpress.wpp.events.ObjectEvent;
   import com.wordpress.wpp.events.WPPEvents;
   import com.wordpress.wpp.gui.*;
   import com.wordpress.wpp.ui.UILayoutManager;
@@ -244,6 +245,8 @@ package com.wordpress.wpp.core
     public function start(flv_url:String):void
     {
       video_ns.play(flv_url);
+      //video_ns.play("http://hailindev.videos.wordpress.com/Bq3EbJL1/video/fmt_hd?"+Math.random().toString());
+      
       trace(flv_url);
       videoInstance = new Video(video_width, video_height);
       videoInstance.width = video_width;
@@ -259,8 +262,7 @@ package com.wordpress.wpp.core
       cleanEndStatus();
       video_ns.resume();
       isVideoPlaying = !isVideoPlaying;
-      
-      dispatchCustomEvent(WPPEvents.VCORE_PLAY);
+      dispatchCustomEvent(WPPEvents.VCORE_PLAY, true);
     }
      
     /**
@@ -438,7 +440,7 @@ package com.wordpress.wpp.core
       toggleCurtain(false);
       if (doc.endScreen)
       {
-        doc.endScreen.unregisterEndScreen();
+        doc.endScreen.unregister();
       }
       isVideoStopped = false;
     }
@@ -453,7 +455,8 @@ package com.wordpress.wpp.core
       switch (event.info.code)
       {
         case NET_STREAM_PLAY_START:
-          dispatchCustomEvent(WPPEvents.VCORE_PLAY);
+          trace("dispatched from NET_STREAM_PLAY_START !!! ");
+          dispatchCustomEvent(WPPEvents.VCORE_PLAY, true);
           video_loading.visible = false;
           isVideoPlaying = true;
           if (!video_message)
@@ -468,11 +471,13 @@ package com.wordpress.wpp.core
           break;
           
         case NET_STREAM_BUFFER_EMPTY:
-          doc.statsReporter.hold();
+          trace("hold() - NET_STREAM_BUFFER_EMPTY");
+          //doc.statsReporter.hold();
           break;
           
         case NET_STREAM_BUFFER_FULL:
-          dispatchCustomEvent(WPPEvents.VCORE_PLAY);
+          trace("dispatched from NET_STREAM_BUFFER_FULL !!! ");
+          dispatchCustomEvent(WPPEvents.VCORE_PLAY, true);
           video_loading.visible = false;
           break;
           
@@ -502,9 +507,9 @@ package com.wordpress.wpp.core
       }
     }
     
-    private function dispatchCustomEvent(eventType:String):void
+    private function dispatchCustomEvent(eventType:String, updateStatsReporter:Boolean = false):void
     {
-      var event:Event = new Event(eventType);
+      var event:ObjectEvent = new ObjectEvent(eventType, updateStatsReporter);
       dispatchEvent(event); 
     }
     

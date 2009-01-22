@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.ui
  * @class       com.wordpress.wpp.ui.UIControl
  *
- * @description   
- * @author      automattic
- * @created:     Aug 14, 2008
+ * @description   Controller manager base class
+ * @author        automattic
+ * @created:      Aug 14, 2008
  * @modified:     Sep 29, 2008  
  *   
  */

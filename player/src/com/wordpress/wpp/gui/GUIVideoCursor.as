@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.gui
  * @class       com.wordpress.wpp.gui.GUIVideoCursor
  *
- * @description   
- * @author      automattic
- * @created:     Jul 28, 2008
+ * @description   (linkage via FLA) Video cursor
+ * @author        automattic
+ * @created:      Jul 28, 2008
  * @modified:     Sep 29, 2008  
  *   
  * @bugfix:  Sep 29, fixed the bug of the font and if the length of a video is as long as an hour, the look would be more smooth

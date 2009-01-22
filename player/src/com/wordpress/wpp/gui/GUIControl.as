@@ -2,9 +2,9 @@
  * @package     com.wordpress.wpp.gui
  * @class       com.wordpress.wpp.gui.GUIControl
  *
- * @description   
- * @author      automattic
- * @created:     Aug 04, 2008
+ * @description   (linkage via FLA) Main controller
+ * @author        automattic
+ * @created:      Aug 04, 2008
  * @modified:     Sep 09, 2008  
  *   
  */
