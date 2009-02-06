@@ -115,8 +115,8 @@ Before the video is displayed on a WordPress blog, the parsing function in video
 
 `<embed src="http://v.mydomain.com/hFr8Nyar" type="application/x-shockwave-flash" width="400" height="224" allowscriptaccess="always" allowfullscreen="true"></embed>`
 
-http://v.mydomain.com/hFr8Nyar is rewritten into
-http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B
+*http://v.mydomain.com/hFr8Nyar* is rewritten into
+*http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B*
 by the following rewrite rule defined in .htaccess:
 
 RewriteCond %{HTTP_HOST} ^v\.mydomain\.com
@@ -136,9 +136,9 @@ The player then intelligently loads the most suitable video files and plays the 
 For example, if the player checks the embed width and height, and decides that it is best to fetch and play the smaller version, 
 it will use the fmt_std section of the xml file and request the corresponding movie file and original thumbnail images.
 
-movie_file:  http://michaelpick.videos.mydomain.com/hFr8Nyar/video/fmt_std
-original_image: http://michaelpick.videos.mydomain.com/hFr8Nyar/original/fmt_std
-thumbnail_imiage: http://michaelpick.videos.mydomain.com/hFr8Nyar/thumbnail/fmt_std</thumbnail_img>
+movie_file:  *http://michaelpick.videos.mydomain.com/hFr8Nyar/video/fmt_std*
+original_image: *http://michaelpick.videos.mydomain.com/hFr8Nyar/original/fmt_std*
+thumbnail_imiage: *http://michaelpick.videos.mydomain.com/hFr8Nyar/thumbnail/fmt_std*
 
 As you can see in this example, the video files URL structure has the following format:
 blog_domain.videos.mydomain/guid/format
@@ -151,7 +151,7 @@ The following rules are configured in .htaccess for this purpose:
 
 RewriteCond %{REQUEST_URI} ^/$
 RewriteCond %{HTTP_HOST} ^(.+)\.videos\.wordpress\.com
-RewriteRule (.*) http://%1.mydomain.com/ [R,L]
+RewriteRule (.*) *http://%1.mydomain.com/ [R,L]*
 
 RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com
 RewriteCond %{REQUEST_URI} !blogs.php
