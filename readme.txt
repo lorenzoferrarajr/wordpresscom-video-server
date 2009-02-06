@@ -115,9 +115,9 @@ Before the video is displayed on a WordPress blog, the parsing function in video
 ` width="400" height="224" allowscriptaccess="always" allowfullscreen="true"></embed>`
 
 In the above example, 
-`http://v.mydomain.com/hFr8Nyar`
+`v.mydomain.com/hFr8Nyar`
 is rewritten to 
-`http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B`
+`v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B`
 by the following rewrite rule defined in .htaccess:
 
 `RewriteCond %{HTTP_HOST} ^v\.mydomain\.com`
