@@ -80,7 +80,6 @@ Set up your system environments. One URL serving sample is described in the extr
 Testing and customization
 Because this is an entire video solution, it will take some time to test and tailor it to your system.
 
-6. 
 Video Player
 The video player source code is also released. The player is written in actionscript 3 using Adobe Flash CS3. 
 The source code is located at directory player/ and you don't need to deploy it to your servers. 
@@ -119,10 +118,10 @@ Before the video is displayed on a WordPress blog, the parsing function in video
 *http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B*
 by the following rewrite rule defined in .htaccess:
 
-RewriteCond %{HTTP_HOST} ^v\.mydomain\.com
-RewriteCond %{REQUEST_URI} !/videofile/
-RewriteCond %{REQUEST_URI} !/wp-content/
-RewriteRule ^([^/]+) /wp-content/plugins/video/flvplayer.swf?guid=$1 [L,R=302]
+`RewriteCond %{HTTP_HOST} ^v\.mydomain\.com`
+`RewriteCond %{REQUEST_URI} !/videofile/`
+`RewriteCond %{REQUEST_URI} !/wp-content/`
+`RewriteRule ^([^/]+) /wp-content/plugins/video/flvplayer.swf?guid=$1 [L,R=302]`
 
 Once the player (flvplayer.swf) is loaded, it receives the video guid,
 then the flash player queries video-xml.php to retrieve all the relevant information about a video, 
@@ -149,14 +148,14 @@ On the system side, you need to make sure you can serve the video files accordin
 
 The following rules are configured in .htaccess for this purpose:
 
-RewriteCond %{REQUEST_URI} ^/$
-RewriteCond %{HTTP_HOST} ^(.+)\.videos\.wordpress\.com
-RewriteRule (.*) *http://%1.mydomain.com/ [R,L]*
+`RewriteCond %{REQUEST_URI} ^/$`
+`RewriteCond %{HTTP_HOST} ^(.+)\.videos\.wordpress\.com`
+`RewriteRule (.*) http://%1.mydomain.com/ [R,L]`
 
-RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com
-RewriteCond %{REQUEST_URI} !blogs.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^/]+)/(.*)/(.*)$  /wp-content/blogs.php?video_guid=$1&type=$2&format=$3 [L]
+`RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com`
+`RewriteCond %{REQUEST_URI} !blogs.php`
+`RewriteCond %{REQUEST_FILENAME} !-f`
+`RewriteRule ^([^/]+)/(.*)/(.*)$  /wp-content/blogs.php?video_guid=$1&type=$2&format=$3 [L]`
 
 In the above, the video is served by /wp-content/blogs.php. This is a purely system-specific example. 
 You will need to determine how you will serve your videos, either from your own local data server or using CDN.
