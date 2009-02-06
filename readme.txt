@@ -74,13 +74,12 @@ The transcoder is the heart of any video system, and it must work correctly.
 
 4.
 Determine your file serving infrastructure and file serving URL schemes.
-Set up your system environments. One URL serving sample is described in the extra section.
+Set up your system environments. One URL serving sample is described in the extra note section.
 
 5.
 Testing and customization
 Because this is an entire video solution, it will take some time to test and tailor it to your system.
 
-Video Player
 The video player source code is also released. The player is written in actionscript 3 using Adobe Flash CS3. 
 The source code is located at directory player/ and you don't need to deploy it to your servers. 
 Refer to player/readme.txt for more details. 
@@ -103,7 +102,7 @@ This plugin can also be used as the foundation for a video startup company.
 
 1. This screenshot description corresponds to video architecture screenshot-1.png
 
-== Arbitrary section ==
+== URL Structure ==
 
 Sample Video URL Structure
 
@@ -115,8 +114,9 @@ Before the video is displayed on a WordPress blog, the parsing function in video
 `<embed src="http://v.mydomain.com/hFr8Nyar" type="application/x-shockwave-flash"`
 ` width="400" height="224" allowscriptaccess="always" allowfullscreen="true"></embed>`
 
+In the above example, 
 `http://v.mydomain.com/hFr8Nyar`
-is rewritten to*
+is rewritten to 
 `http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=f6n7RD5B`
 by the following rewrite rule defined in .htaccess:
 
@@ -137,10 +137,6 @@ The player then intelligently loads the most suitable video files and plays the 
 For example, if the player checks the embed width and height, and decides that it is best to fetch and play the smaller version, 
 it will use the fmt_std section of the xml file and request the corresponding movie file and original thumbnail images.
 
-movie_file:  `http://michaelpick.videos.mydomain.com/hFr8Nyar/video/fmt_std`
-original_image: `http://michaelpick.videos.mydomain.com/hFr8Nyar/original/fmt_std`
-thumbnail_imiage: `http://michaelpick.videos.mydomain.com/hFr8Nyar/thumbnail/fmt_std`
-
 As you can see in this example, the video files URL structure has the following format:
 blog_domain.videos.mydomain/guid/format
 
@@ -151,7 +147,7 @@ On the system side, you need to make sure you can serve the video files accordin
 The following rules are configured in .htaccess for this purpose:
 
 `RewriteCond %{REQUEST_URI} ^/$`
-`RewriteCond %{HTTP_HOST} ^(.+)\.videos\.wordpress\.com`
+`RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com`
 `RewriteRule (.*) http://%1.mydomain.com/ [R,L]`
 
 `RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com`
