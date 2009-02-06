@@ -1,6 +1,6 @@
 === WordPress Video Solution Framework ===
 
-Contributors: Automattic, Inc.  
+Contributors: Automattic, Inc.
 Tags: WordPress video, video solution
 Requires at least: 2.6
 Tested up to: 2.7
@@ -14,18 +14,18 @@ You will need to customize it with your own infrastructure configurations in ord
 == Description ==
 
 This package contains the video solutions framework, including transcoder and administration interface utilities, written in PHP. 
-The code was developed by Automattic, Inc., and powers WordPress.com video solutions. 
+The code was developed by Automattic, Inc., and powers WordPress.com video solutions.
 It supports multiple formats, including HD. 
-It is an open source project, which means you can reuse it, build upon it, and share it with the community.
+It is an open source project, which means you can reuse it, build upon it, and share it with the community.
 
 **Warning**
-*This plugin is different from other plugins because it can not be used "out-of-the-box". 
+*This plugin is different from other plugins because it can not be used "out-of-the-box".
 It is intended for self-hosted large scale WordPress MU sites that want to develop their own customized video solutions. 
 In addition to Web servers for WordPress MU , it requires at least one file server and one dedicated video transcoder. 
 Considerable amount of PHP coding and system administration skills are required to install, customize and deploy this plugin.*
 
 Contained is a whole package of video solution code. 
-It can be used as the foundation for a full-fledged video system. 
+It can be used as the foundation for a full-fledged video system. 
 Individual components such as the video player and transcoder are reusable as well.
 
 The video architecture has three key steps: 
@@ -34,7 +34,7 @@ The video architecture has three key steps:
 
 2. Transcoder transcodes the video into h.264 mp4 (standard, DVD, and HD), and produces thumbnails
 
-3. File server downloads the mp4 and thumbnail images, then replicates files 
+3. File server downloads the mp4 and thumbnail images, then replicates files
 
 The screenshots section contains the video architecture diagram.
 
@@ -42,7 +42,7 @@ Send your feedback or questions to: hailin AT automattic.com
 
 == Installation ==
 
-Steps to modify and deploy the video solution: 
+Steps to modify and deploy the video solution:
 
 1.
 Make sure the following directories under your WordPress root directory already exist. 
@@ -67,18 +67,18 @@ Once the entire transcoding utilities are installed, go to server/setup director
 php video-verify-ffmpeg.php
 
 The above command downloads a sample video, and tries to use the ffmpeg you just installed to transcode it.
-If it can successfully transcode the video, it prints out the message "Congratulations! ffmpeg is installed correctly." 
+If it can successfully transcode the video, it prints out the message "Congratulations! ffmpeg is installed correctly."
 
 If you see an error message, make sure the transcoder is installed successfully.
 The transcoder is the heart of any video system, and it must work correctly.
 
-4. 
+4.
 Determine your file serving infrastructure and file serving URL schemes.
 Set up your system environments. One URL serving sample is described in the extra section.
 
-5. 
+5.
 Testing and customization
-Because this is an entire video solution, it will take some time to test and tailor it to your system. 
+Because this is an entire video solution, it will take some time to test and tailor it to your system.
 
 6. 
 Video Player
@@ -91,15 +91,14 @@ http://www.gnu.org/copyleft/gpl.html
 
 == Frequently Asked Questions ==
 
-= Why does this plugin seem so complex ? = 
+= Why does this plugin seem so complex ? =
 
 It is not a "regular" plugin. It's a complete video solutions framework,
 which handles video upload, transcoding, serving and video player.
 If you just use WordPress for your own personal blog, this is not for you.
 It's designed for *large scale WordPress MU systems* which host at least thousands of blogs.
 
-This plugin can also be used as the foundation for a video startup company. 
-
+This plugin can also be used as the foundation for a video startup company.
 
 == Screenshots ==
 
@@ -157,7 +156,7 @@ RewriteRule (.*) http://%1.mydomain.com/ [R,L]
 RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com
 RewriteCond %{REQUEST_URI} !blogs.php
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^/]+)/(.*)/(.*)$  /wp-content/blogs.php?video_guid=$1&type=$2&format=$3 [L]
+RewriteRule ^([^/]+)/(.*)/(.*)$  /wp-content/blogs.php?video_guid=$1&type=$2&format=$3 [L]
 
 In the above, the video is served by /wp-content/blogs.php. This is a purely system-specific example. 
 You will need to determine how you will serve your videos, either from your own local data server or using CDN.
