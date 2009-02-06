@@ -1,84 +1,157 @@
-
 === WordPress Video Solution Framework ===
 
-Contributors: Automattic Inc  
+Contributors: Automattic, Inc.  
 Tags: WordPress video, video solution
 Requires at least: 2.6
 Tested up to: 2.7
 Stable tag: trunk
 
-Video solutions framework, including player, transcoder and administration interface utilities as wpmu plugin. 
-It powers wordpress.com video solutions. Supports multiple formats including HD. 
-You need to customize it with your own infrastructure configurations in order to use it. 
+Video solutions framework, including player, transcoder and administration interface utilities as WordPress MU plugin. It powers WordPress.com video solutions and supports multiple formats including HD. It is designed as a video solution for *large scale self-hosted WordPress MU systems*. You will need to customize it with your own infrastructure configurations in order to use it.
 
 == Description ==
 
-The package contains video solutions framework, including transcoder and 
-administration interface utilities, written in PHP.  The code was developed 
-by Automattic Inc, and powers wordpress.com video solutions.  
-It supports multiple formats including HD. 
-We hereby make it open source project so that you can reuse it, build upon it, and share with the community. 
+This package contains the video solutions framework, including transcoder and administration interface utilities, written in PHP. The code was developed by Automattic, Inc., and powers WordPress.com video solutions. It supports multiple formats, including HD. It is an open source project, which means you can reuse it, build upon it, and share it with the community.
 
-The solution is a WPMU plugin. However it can not be used as "out-of-the-box" type 
-because it also depends on your file serving infrastructure, 
-and your URL schemes.  Customize your pieces, then you have a full-fledged video solution. 
-Or you can just reuse the individual components such as video player or transcoder. 
+**Warning**
+*This plugin is different from other plugins because it can not be used "out-of-the-box". It is intended for self-hosted large scale WordPress MU sites that want to develop their own customized video solutions. In addition to Web servers for WordPress MU , it requires at least one file server and one dedicated video transcoder. Considerable amount of PHP coding and system administration skills are required to install, customize and deploy this plugin.*
+Contained is a whole package of video solution code. It can be used as the foundation for a full-fledged video system. Individual components such as the video player and transcoder are reusable as well.
 
-Below illustrates the implemented video architecture: 
+The video architecture has three key steps: 
 
-1.[Admin Web Server]  user uploads raw video
+1. User uploads raw video to admin web server
 
-2.[Transcoder]  transcodes the video into h.264 mp4 (standard, DVD, and HD), and produces thumbnails 
+2. Transcoder transcodes the video into h.264 mp4 (standard, DVD, and HD), and produces thumbnails
 
-3.[File server] downloads the mp4 and thumbnail images, then replicates files  
+3. File server downloads the mp4 and thumbnail images, then replicates files 
+
+The screenshots section contains the video architecture diagram.
+
+Send your feedback or questions to: hailin AT automattic.com
 
 == Installation ==
 
-Steps to modify and deploy the video solution: 
+Steps to modify and deploy the video solution: 
 
 1.
-Create database and table named "videos", which is used to store individual video meta information. 
- 
-Videos table definition
+Make sure the following directories under your WordPress root directory already exist. 
+Create them if necessary: wp-content/mu-plugins  and wp-content/plugins/video/
 
-CREATE TABLE `videos` (
-  `guid` varchar(32) NOT NULL default '',
-  `domain` varchar(200) default NULL,
-  `blog_id` bigint(20) NOT NULL default '0',
-  `post_id` bigint(20) NOT NULL default '0',
-  `path` varchar(255) NOT NULL default '',
-  `date_gmt` datetime default '0000-00-00 00:00:00',
-  `finish_date_gmt` varchar(24) default '0000-00-00 00:00:00' COMMENT 'job finish time',
-  `duration` varchar(10) default NULL COMMENT 'video length',
-  `width` int(11) default NULL COMMENT 'original width',
-  `height` int(11) default NULL COMMENT 'original height',
-  `dc` varchar(5) default 'dfw' COMMENT 'originating dc',
-  `flv` varchar(50) default NULL COMMENT 'status of flv format',
-  `fmt_std` varchar(50) default NULL,
-  `fmt_dvd` varchar(50) default NULL,
-  `fmt_hd` varchar(50) default NULL,
-  `display_embed` tinyint(4) NOT NULL default '1',
-  PRIMARY KEY  (`blog_id`,`post_id`),
-  UNIQUE KEY `guid` (`guid`),
-  KEY `date_gmt` (`date_gmt`)
-)
+Copy files in server/mu-plugins/ to your_WP_root/wp-content/mu-plugins; and copy files in server/plugins/video/ to your_WP_root/wp-content/plugins/video/
 
-2.  
-Configure video transcoder with ffmpeg and other tools. 
-A sample configuration script is attached (transcoder-config.sh)
+Carefully study the source code, understand your system environment, and modify places marked "CUSTOMIZE".
 
-3.  
-Figure out your file serving infrastructure and file serving url schemes, 
-and modify the code to reflect that. The places where you need to modify are marked "CUSTOMIZE". 
+2.
+Create a database and table named "videos," which is used to store individual video meta information.
+The sql script file is server/setup/videos-table.txt.
+Every video corresponds to one row in the table.
 
-4.  
-Copy files in mu-plugins/ to wp-content/mu-plugins; and copy files in plugins/video/ to wp-content/ plugins/video/
+3.
+Set up a dedicated transcoder server with Linux/Unix operation system.
+You'll need to first install the whole WPMU package and this plugin code because the transcoder uses general blog functions as well.
+In addition, follow server/setup/transcoder-setup.txt to install the transcoding utilities.
+Once the entire transcoding utilities are installed, go to server/setup directory and run the following command to verify the installation:
+php video-verify-ffmpeg.php
 
-5.  
-Testing 
-It is an entire video solution, and we've spent months developing it, 
-so naturally it will take you some time to test and tailor it to your system.  
+The above command downloads a sample video, and tries to use the ffmpeg you just installed to transcode it.
+If it can successfully transcode the video, it prints out the message "Congratulations! ffmpeg is installed correctly." 
+If you see an error message, make sure the transcoder is installed successfully.
+The transcoder is the heart of any video system, and it must work correctly.
 
-The software contained in this package is under GNU GENERAL PUBLIC LICENSE. 
+4. 
+Determine your file serving infrastructure and file serving URL schemes.
+Set up your system environments. One URL serving sample is described in the extra section.
+
+5. 
+Testing and customization
+Because this is an entire video solution, it will take some time to test and tailor it to your system. 
+
+6. 
+Video Player
+The video player source code is also released. The player is written in actionscript 3 using Adobe Flash CS3. 
+The source code is located at directory player/ and you don't need to deploy it to your servers. 
+Refer to player/readme.txt for more details. 
+
+The software contained in this package is under GNU GENERAL PUBLIC LICENSE.
 http://www.gnu.org/copyleft/gpl.html
 
+== Frequently Asked Questions ==
+
+= Why does this plugin seem so complex ? = 
+
+It is not a "regular" plugin. It's a complete video solutions framework,
+which handles video upload, transcoding, serving and video player.
+If you just use WordPress for your own personal blog, this is not for you.
+It's designed for *large scale WordPress MU systems* which host at least thousands of blogs.
+
+This plugin can also be used as the foundation for a video startup company. 
+
+
+== Screenshots ==
+
+1. This screenshot description corresponds to video architecture video-architecture.png
+
+== Arbitrary section ==
+
+Sample Video URL Structure
+
+Suppose a user uploads a video, which is transcoded and processed successfully by the video system
+Internally, the video is assigned the guid: hFr8Nyar. The internal shortcode produced is [wpvideo hFr8Nyar].
+Before the video is displayed on a WordPress blog, the parsing function in video.php converts the shortcode into the following embed code:
+
+`<embed src="http://v.mydomain.com/hFr8Nyar" type="application/x-shockwave-flash" width="400" height="224" allowscriptaccess="always" allowfullscreen="true"></embed>`
+
+http://v.mydomain.com/hFr8Nyar is rewritten into
+http://v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid= f6n7RD5B
+by the following rewrite rule defined in .htaccess:
+
+# video rewrite rules
+# rewrite v.mydomain.com/hFr8Nyar  into
+# v.mydomain.com/wp-content/plugins/video/flvplayer.swf?guid=hFr8Nyar
+
+RewriteCond %{HTTP_HOST} ^v\.mydomain\.com
+RewriteCond %{REQUEST_URI} !/videofile/
+RewriteCond %{REQUEST_URI} !/wp-content/
+RewriteRule ^([^/]+) /wp-content/plugins/video/flvplayer.swf?guid=$1 [L,R=302]
+
+Once the player (flvplayer.swf) is loaded, it receives the video guide,
+then the flash player queries video-xml.php to retrieve all the relevant information about a video, including different formats, thumbnail images, duration, and other meta information.
+
+For example, for the above guid hFr8Nyar, the video player queries and obtains the following xml data.
+
+Here's a link to [video xml information for guid hFr8Nyar](http://v.wordpress.com/wp-content/plugins/video/video-xml.php?guid=hFr8Nyar "video xml information")
+
+The player then intelligently loads the most suitable video files and plays the video.
+For example, if the player checks the embed width and height, and decides that it’s best to fetch and play the smaller version, it will use the <fmt_std> section of the xml file and request the corresponding movie file and original thumbnail images.
+
+<fmt_std>
+  <width>400</width>
+  <height>224</height>
+  <movie_file>http://michaelpick.videos.mydomain.com/hFr8Nyar/video/fmt_std</movie_file>
+  <original_img>http://michaelpick.videos.mydomain.com/hFr8Nyar/original/fmt_std</original_img>
+  <thumbnail_img>http://michaelpick.videos.mydomain.com/hFr8Nyar/thumbnail/fmt_std</thumbnail_img>
+  </fmt_std>
+
+As you can see in this example, the video files URL structure has the following format:
+blog_domain.videos.mydomain/guid/format
+
+The important thing is to use a consistent structure and you can serve the files accordingly.
+
+On the system side, you need to make sure you can serve the video files according to the URL structure.
+
+The following rules are configured in .htaccess for this purpose:
+
+# Redirect requests for http://blog.videos.mydomain.com/ to http://blog.mydomain.com/
+RewriteCond %{REQUEST_URI} ^/$
+RewriteCond %{HTTP_HOST} ^(.+)\.videos\.wordpress\.com
+RewriteRule (.*) http://%1.mydomain.com/ [R,L]
+
+# video file rewrite rules
+# eg:  http://hailindev.videos.mydomain.com/f6n7RD5B/video/fmt_std  becomes 
+# http://hailindev.videos.mydomain.com/wp-content/blogs.php?video_guid=f6n7RD5B&type=video&format=fmt_std
+
+RewriteCond %{HTTP_HOST} ^(.+)\.videos\.mydomain\.com
+RewriteCond %{REQUEST_URI} !blogs.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^/]+)/(.*)/(.*)$  /wp-content/blogs.php?video_guid=$1&type=$2&format=$3 [L]
+
+In the above, the video is served by /wp-content/blogs.php. This is a purely system-specific example. You will need to determine how you will serve your videos, either from your own local data server or using CDN.

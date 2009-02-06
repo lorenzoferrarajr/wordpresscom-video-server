@@ -77,6 +77,8 @@ $xml .= "<caption>$caption</caption>\n";
 $xml .= "<duration>$total_seconds</duration>\n"; 
 $xml .= "<blog_domain>http://$domain</blog_domain>\n";
 $xml .= "<default_volume>94</default_volume>\n";
+if ( $info->rating != 'G' )
+	$xml .= "<rating>$info->rating</rating>\n";
 $xml .= "<is_private>0</is_private>\n";
 $xml .= "<is_logged_in>$logged_in</is_logged_in>\n"; 
 $xml .= "<status_interval>15</status_interval>\n"; 
@@ -135,13 +137,10 @@ foreach ( $types as $type ){
 	if ( $width %2 == 1 )   $width--; //in sync with logic in transcoder 
 	if ( $height %2 == 1 )  $height--; 
 	
-	/* CUSTOMIZE: 
-	 * construct your own urls according to your serving infrastructure
-	 * $movie_file    = 'http://' . $domain_prefix . '.your_domain/' . $guid . '/video/' . $type; 
-	 * $original_img  = 'http://' . $domain_prefix . '.your_domain/' . $guid . '/original/' . $type; 
-	 * $thumbnail_img = 'http://' . $domain_prefix . '.your_domain/' . $guid . '/thumbnail/' . $type; 
-	 * $stats_url = "http://your_domain/beacon.gif?blog=$blog_id&amp;post=$post_id&amp;video_fmt=$type";
-	 */
+	//CUSTOMIZE: modify mydomain
+	$movie_file    = 'http://' . $domain_prefix . '.videos.mydomain.com/' . $guid . '/video/' . $type; 
+	$original_img  = 'http://' . $domain_prefix . '.videos.mydomain.com/' . $guid . '/original/' . $type; 
+	$thumbnail_img = 'http://' . $domain_prefix . '.videos.mydomain.com/' . $guid . '/thumbnail/' . $type; 
 	
 	$xml .= "<width>$width</width>\n";
 	$xml .= "<height>$height</height>\n";
@@ -167,15 +166,15 @@ if ( $info->display_embed == 1 ) {
 		$embed_height = (int)( 400 * ($info->height/$info->width) ); 
 	
 	if ( $embed_height %2 == 1 )  $embed_height--; 
-
-	//CUSTOMIZE: contruct the embed codes according to your serving infrastructure
-	$xml .= "<embed_code><![CDATA[<embed src=\"http://your_domain/$guid\" type=\"application/x-shockwave-flash\" width=\"400\" height=\"$embed_height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>]]></embed_code>\n"; 
+	
+	//CUSTOMIZE: modify mydomain
+	$xml .= "<embed_code><![CDATA[<embed src=\"http://v.mydomain.com/$guid\" type=\"application/x-shockwave-flash\" width=\"400\" height=\"$embed_height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>]]></embed_code>\n"; 
 
 	if ( $info->fmt_dvd == 'done' ) { 
 	
 		$large_embed_height = (int)( 640 * ($info->height/$info->width) ); 
 		if ( $large_embed_height %2 == 1 )  $large_embed_height--; 
-		$xml .= "<large_embed_code><![CDATA[<embed src=\"http://your_domain/$guid\" type=\"application/x-shockwave-flash\" width=\"640\" height=\"$large_embed_height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>]]></large_embed_code>\n"; 
+		$xml .= "<large_embed_code><![CDATA[<embed src=\"http://v.mydomain.com/$guid\" type=\"application/x-shockwave-flash\" width=\"640\" height=\"$large_embed_height\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></embed>]]></large_embed_code>\n"; 
 	} 
 
 	$xml .= "<wp_embed>[wpvideo $guid]</wp_embed>"; 

@@ -38,18 +38,18 @@ function video_image_url( $post_id, $format='fmt_std' , $type='thumbnail') {
  * choose a file server that is live
  * CUSTOMIZE: add your own logic if there are multiple file servers
  */
-function pick_fileserver( $dc = 'your_data_center' ) {
+function pick_fileserver( $dc = 'my_data_center' ) {
 	
-	return 'http://your_domain/your_fileserver'; 
+	return 'http://mydomain.com/myfileserver_url'; 
 }
 
 /** 
  * choose a transcoder that is live
  * CUSTOMIZE: add your own logic if there are multiple transcoders
  */
-function pick_transcoder( $dc = 'your_data_center') {
+function pick_transcoder( $dc = 'my_data_center') {
 	
-	return 'http://your_domain/your_transcoder';
+	return 'http://my_domain.com/my_transcoder_url';
 	
 }
 	
@@ -114,7 +114,7 @@ function remote_transcode_one_video( $post_id ) {
 	 * video_url should indicate the current file server 
 	 * so that the video is immediately available for download, 
 	 * right after the initial upload
-	 * eg: http://file.your_domain/wp-content/blogs.dir/8e7/2168894/files/2008/04/clip5-matt.mp4
+	 * eg: http://file.mydomain.com/wp-content/blogs.dir/8e7/2168894/files/2008/04/clip5-matt.mp4
 	 */
 	$path = get_attached_file( $post_id ); 
 
@@ -283,6 +283,36 @@ function update_video_info( $blog_id, $post_id, $column, $value ){
 
 function is_video( $post_id ) {
 	return ( 0 === strpos( get_post_mime_type( $post_id ), 'video/' ) );
+}
+
+/**
+ * get the original video name, given IDs
+ * return name or post_id if the info does not exist
+ */
+function video_get_name( $blog_id, $post_id ) {
+	
+	$info = video_get_info_by_blogpostid( $blog_id, $post_id ); 
+	if ( empty( $info ) )
+		return "video ID: $post_id"; 
+		
+	$basename = basename( $info->path ); 
+	$name = preg_replace( '/\.\w+/', '', $basename ); 
+	return $name; 
+}
+
+/**
+ * determine whether a blog is a video blog
+ * return true if it contains at least one video; return false otherwise 
+ */
+function is_video_blog( $blog_id ) {
+	global $wpdb; 
+	
+	$r = $wpdb->get_results( "SELECT * FROM videos WHERE blog_id=$blog_id LIMIT 1" ); 
+	
+	if ( empty( $r ) )	
+		return false;
+	else 	
+		return true; 
 }
 
 /**

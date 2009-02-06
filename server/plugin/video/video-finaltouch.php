@@ -12,8 +12,10 @@
  * Version: 0.9
  */
  
-require('CUSTOMIZE: your configuration header');
-
+/* 
+ * CUSTOMIZE: your configuration header
+ * require('../../../wp-config.php');
+ */
 ignore_user_abort();
 
 $blog_id  = $wpdb->escape( $_POST['blog_id'] );
@@ -72,6 +74,19 @@ if ( !is_uploaded_file( $video_file ) || !is_uploaded_file( $thumbnail_jpg ) || 
  * $pathname = ABSPATH . $match[0];
 */ 
 
+/*
+ * create sub directories if they were removed before, this is necessary to handle legacy vidavee videos
+ * eg, "/2006/08/ in /home/wpdev/public_html/wp-content/blogs.dir/00d/1594819/files/2006/08/video.avi
+ */
+$month_dir = dirname( $pathname );
+$year_dir = dirname( dirname( $pathname ) );
+
+if ( !file_exists( $year_dir ) )
+        mkdir( $year_dir );
+
+if ( !file_exists( $month_dir ) )
+        mkdir( $month_dir );
+        
 if ( $format == 'fmt_std' ){
 	
 	$video_pathname         = preg_replace( '/\.[^.]+$/', ".mp4", $pathname ); 

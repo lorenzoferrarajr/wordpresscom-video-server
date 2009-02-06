@@ -1,0 +1,107 @@
+##############################################################################
+# INSTALLATION GUIDE FOR TRANSCODER UTILITIES
+##############################################################################
+# NOTE:
+# These are the steps that work to install the various transcoder utilities
+# and system tools that power the WordPress.com video subsystem.
+#
+# Currently this is mainly deployed on a standard Debian Etch installation
+# on AMD64 processors (2.6.18-6-amd64) in our environment. 
+#
+# This should be used as a guide, rather than a step by step install routine.
+# You might not need all of these utilities, or you might need more of them, 
+# or, more likely, there are newer releases of these available and it will 
+# probably make sense to use the latest releases. You might need different
+# versions of these tools if you are on a different platform. 
+#
+# Some of these steps are Debian specific, some are not. Please use the tools
+# available on your platform where needed.
+##############################################################################
+
+#----------------------------------------------------------------------------#
+# Step 1: Install some required system libraries
+#----------------------------------------------------------------------------#
+
+apt-get install ruby make nasm  zlib1g-dev wget  autoconf automake libtool g++ subversion
+
+#----------------------------------------------------------------------------#
+# Step 2: Download and install FLVTool
+# FLVTool2 is a manipulation tool for Macromedia Flash Video files
+#----------------------------------------------------------------------------#
+
+wget http://rubyforge.org/frs/download.php/17497/flvtool2-1.0.6.tgz
+tar -zxf flvtool2-1.0.6.tgz 
+cd flvtool2-1.0.6
+ruby setup.rb
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 3: Download and install LAME
+# LAME: LAME Ain't an MP3 Encoder
+#----------------------------------------------------------------------------#
+
+wget http://downloads.sourceforge.net/lame/lame-3.97.tar.gz
+tar -zxf lame-3.97.tar.gz 
+cd lame-3.97
+./configure --disable-decoder --enable-nasm && make && make install
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 4: Download and install FAAD
+# FAAD: Freeware Advanced Audio Coder and Decoder
+#----------------------------------------------------------------------------#
+
+wget http://downloads.sourceforge.net/faac/faad2-2.6.1.tar.gz
+tar -zxf faad2-2.6.1.tar.gz
+cd faad2
+autoreconf -vif && ./configure --with-mp4v2 && make && make install
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 5: Download and install FAAC
+# FAAC: Freeware Advanced Audio Coder and Decoder
+#----------------------------------------------------------------------------#
+
+wget http://downloads.sourceforge.net/faac/faac-1.26.tar.gz
+tar -zxf faac-1.26.tar.gz
+cd faac
+autoreconf -vif && ./configure && make && make install
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 6: Download and install YASM
+# YASM: Yasm, the modular assembler
+#----------------------------------------------------------------------------#
+
+wget http://www.tortall.net/projects/yasm/releases/yasm-0.7.1.tar.gz
+tar -zxvf yasm-0.7.1.tar.gz
+cd yasm-0.7.1
+./configure && make && make install
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 7: Download and install x264
+# x264: x264 is a free library for encoding H264/AVC video streams
+#----------------------------------------------------------------------------#
+
+wget http://downloads.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-20080702-2245.tar.bz2
+bunzip2 x264-snapshot-20080702-2245.tar.bz2
+tar -xvf x264-snapshot-20080702-2245.tar
+cd x264-snapshot-20080702-2245
+./configure --enable-pthread --enable-shared --prefix=/usr && make && make install 
+cd ../
+
+#----------------------------------------------------------------------------#
+# Step 8: Download and install ffmpeg
+# ffmpeg is a command line tool to convert multimedia files between formats.
+#----------------------------------------------------------------------------#
+
+svn checkout -r13780 svn://svn.ffmpeg.org/ffmpeg/trunk ffmpeg
+cd ffmpeg 
+./configure --enable-gpl --enable-postproc --enable-pthreads --enable-libvorbis --enable-liba52 --enable-libgsm --enable-libmp3lame --enable-libdc1394 --disable-debug --enable-shared --prefix=/usr --enable-libfaad --enable-libfaac --enable-libx264 && make && make install
+echo "/usr/local/lib" >> /etc/ld.so.conf
+/sbin/ldconfig
+make tools/qt-faststart
+mv tools/qt-faststart /usr/bin
+
+

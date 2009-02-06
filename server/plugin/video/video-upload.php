@@ -19,7 +19,7 @@ $form['video_url'] = $video_url;
 $form['blog_id']   = $blog_id; 
 $form['post_id']   = $post_id; 
 $form['dc']        = $dc; 
-$form['auth']      = trim( 'saltedmd5' . md5( "wordpress video transcoder C.O.D Ranch" ) );
+$form['auth']      = trim( 'saltedmd5' . md5( "your local secret" ) );
 
 $r = my_post_form( $transcoder, $form ); 
 

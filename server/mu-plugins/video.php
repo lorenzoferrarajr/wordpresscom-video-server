@@ -16,27 +16,23 @@ define( 'VIDEO_TAG_ID',      '/id="?([0-9]*)[;,", ]?/i' );
 define( 'VIDEO_TAG_WD',      '/w="?([0-9]*)[;,", ]?/i' );
 define( 'VIDEO_TAG_HT',      '/h="?([0-9]*)[;,", ]?/i' );
 
-// parse post content and replace video short codes with player info
-function video_content_parse( $text ) {
 
-	// parse [wpvideo hFr8Nyar] 
-	$text = preg_replace_callback(WP_VIDEO_TAG, 'wp_video_tag_replace', $text);
-	
-	return $text;
-}
+add_shortcode( 'wpvideo', wp_video_tag_replace ); 
+add_shortcode( 'video', vidavee_video_tag_replace ); 
 
 /** 
  * replaces [wpvideo hFr8Nyar w=400] or [wpvideo hFr8Nyar w=400 h=200] 
  * with <embed> tags so that the browser knows to play the video
  */
-function wp_video_tag_replace( $code ) {
-	
+function wp_video_tag_replace( $attr ) {
+	if ( faux_faux() )
+		return '';
 	global $current_blog, $post; 
-
-	$para = $code[1]; 
 	
-	$guid = video_preggetit( $para, VIDEO_TAG_GUID ); 
-
+	$guid   = $attr[0]; 
+	$width  = $attr['w']; 
+	$height = $attr['h']; 
+	
 	$info = video_get_info_by_guid( $guid );
 	
 	if ( false === $info )
@@ -47,9 +43,6 @@ function wp_video_tag_replace( $code ) {
 		$different_blog = true;
 		switch_to_blog( $info->blog_id );
 	}
-
-	$width  = video_preggetit($para, VIDEO_TAG_WD);
-	$height = video_preggetit($para, VIDEO_TAG_HT);
 
 	//use some intelligence to load higher format 
 	if ( $info->flv == 'done' )
@@ -290,7 +283,7 @@ function video_get_filesize( $md5_path ) {
 }
 
 // how many seconds does processing of a megabyte of video takes on average
-define('VIDEO_SECS_PER_MB', 0.0000085245159379501594);
+define('VIDEO_SECS_PER_MB', 0.000005);
 // safety margin beyond the calculated ETA, e.g. 1.2 means 20% more
 define('VIDEO_SAFETY_COEFF', 1.2);
 /**
@@ -339,7 +332,7 @@ function video_embed_flash($format, $guid, $width, $height, $no_js = false) {
 	$results .= "<ins style='text-decoration:none;'>\n"; 
 	$results .= "<div class='video-player' id='x-video-$embed_seq'>\n";
 
-	$no_js_code = "<embed id='video-$embed_seq' src='http://your_domain/$guid' type='application/x-shockwave-flash' width='$width' height='$height' allowscriptaccess='always' allowfullscreen='true' flashvars='javascriptid=video-$embed_seq&width=$width&height=$height'> </embed>";
+	$no_js_code = "<embed id='video-$embed_seq' src='http://mydomain.com/$guid' type='application/x-shockwave-flash' width='$width' height='$height' allowscriptaccess='always' allowfullscreen='true' flashvars='javascriptid=video-$embed_seq&width=$width&height=$height'> </embed>";
 
 	if ($no_js)
 		return $results.$no_js_code.'</div></ins>';
@@ -348,7 +341,7 @@ function video_embed_flash($format, $guid, $width, $height, $no_js = false) {
 
 	$results .= "var vars = {javascriptid: 'video-$embed_seq', width: '$width', height: '$height', locksize: 'no'};\n";
 	$results .= "var params = {allowfullscreen: 'true', allowscriptaccess: 'always', seamlesstabbing: 'true', overstretch: 'true'};\n";
-	$results .= "swfobject.embedSWF('http://your_domain/". $guid . "', 'video-$embed_seq', '$width', '$height', '9.0.115','http://your_domain/wp-content/plugins/video/expressInstall2.swf', vars, params);\n";
+	$results .= "swfobject.embedSWF('http://mydomain.com/". $guid . "', 'video-$embed_seq', '$width', '$height', '9.0.115','http://mydomain.com/wp-content/plugins/video/expressInstall2.swf', vars, params);\n";
 	
 	$results .= "</script>\n";
 	$results .= "<p id='video-$embed_seq' />";
@@ -479,8 +472,9 @@ function get_video_status_code( $error_string ) {
 function video_display_embed_choice( $post_id, $info ) {
 	
 	$checked = (1 == $info->display_embed)? ' checked="checked"' : '';
-	$out  = "<input type='checkbox' name='attachments[$post_id][display_embed]' id='video-display-embed-$post_id' $checked />\n";
-	$out .= "<label for='video-display-embed-$post_id'>" . __( 'Display Embed Code' ) . "</label>";
+	$id = "video-display-embed-$post_id"; 
+	$out  = "<input type='checkbox' name='attachments[$post_id][display_embed]' id='$id' $checked />";
+	$out .= "<label for='$id'>" . __( 'Display Embed Code' ) . "</label>";
 	return $out;	
 }
 
@@ -495,6 +489,37 @@ function video_set_display_embed( $post, $attachment ) {
 		
 		if ( $value != $info->display_embed )
 			update_video_info( $current_blog->blog_id, $post['ID'], 'display_embed', $value );
+	}
+	// do not break the filter
+	return $post;
+}
+
+// produce HTML for the rating radio button
+function video_display_rating( $post_id, $info ) {
+	
+	$ratings = array('G', 'PG-13', 'R-17', 'X-18' ); 
+	
+	foreach( $ratings as $r ) {
+		$checked = ( $info->rating == $r ) ? ' checked="checked"' : '';
+		$id = "video-rating-$post_id-$r";
+		$out .= "<input type='radio' name='attachments[$post_id][rating]' id='$id' value='$r' $checked />"; 
+		$out .="<label for='$id'>" . __( $r ) . "</label>";
+	}
+	return $out;	
+}
+
+function video_set_rating( $post, $attachment ) {
+	global $current_blog;
+	
+	if ( isset($_POST['attachments'][$post['ID']]) ) {
+		
+		$value = $_POST['attachments'][$post['ID']]['rating']; 
+		if ( !empty( $value )){ 
+			
+			$info = video_get_info_by_blogpostid( $current_blog->blog_id, $post['ID'] ); 
+			if ( $value != $info->rating )
+				update_video_info( $current_blog->blog_id, $post['ID'], 'rating', $value );
+		}
 	}
 	// do not break the filter
 	return $post;
@@ -533,10 +558,16 @@ function video_fields_to_edit( $fields, $post ) {
 
 	if ( $status != '' ) {
 
-		$fields[] = array(
+		$fields['video-display'] = array(
 			'label' => __('Display'),
 			'input' => 'html',
 			'html'  => video_display_embed_choice( $post->ID, $info )
+		);
+		
+		$fields['video-rating'] = array(
+			'label' => __('Rating'),
+			'input' => 'html',
+			'html'  => video_display_rating( $post->ID, $info )
 		);
 		
 		//on Mac/Firefox 2.x, display only thumbnail as flash flickers
@@ -555,7 +586,7 @@ function video_fields_to_edit( $fields, $post ) {
 			$video_html = '<p>'.__('Shortcode for embedding:' ).' <strong><code>'.video_send_to_editor_shortcode( '', $post_id, '' ).'</code></strong></p>'.$video_html;
 		}
 
-		$fields[] = array(
+		$fields['video-preview'] = array(
 			'label' => __( 'Preview and Insert' ),
 			'input' => 'html',
 			'html'  => $video_html,
@@ -563,7 +594,7 @@ function video_fields_to_edit( $fields, $post ) {
 	} 
 	
 	if ( $message ) {
-		$fields[] = array(
+		$fields['video-status'] = array(
 			'label' => __( 'Status '),
 			'input' => 'html',
 			'html' => $message,
@@ -646,10 +677,10 @@ function video_shortcodes_help($video_form) {
 			<td colspan="2">
 				<p>Paste your YouTube or Google Video URL above, or use the examples below.</p>
 				<ul class="short-code-list">
-					<li>'.sprintf( __('<a href="%s" target="_blank">YouTube instructions</a> %s'), 'http://support.wordpress.com/videos/4/', '<code>[youtube=http://www.youtube.com/watch?v=AgEmZ39EtFk]</code>' ).'</li>
-					<li>'.sprintf( __('<a href="%s" target="_blank">Google instructions</a> %s') , 'http://support.wordpress.com/videos/3/', '<code>[googlevideo=http://video.google.com/googleplayer.swf?docId=-8459301055248673864]</code>' ).'</li>
-						<li>'.sprintf( __('<a href="%s" target="_blank">DailyMotion instructions</a> %s'), 'http://support.wordpress.com/videos/9/', '<code>[dailymotion id=5zYRy1JLhuGlP3BGw]</code>' ).'</li>
-					<li>'.sprintf( __('<a href="%s" target="_blank">Post to WordPress button</a> %s'), 'http://support.wordpress.com/videos/14/', 'Use VodPod to post videos from hundreds of sites (beta)' ).'</li>
+					<li>'.sprintf( __('<a href="%s" target="_blank">YouTube instructions</a> %s'), 'http://support.mydomain.com/videos/youtube/', '<code>[youtube=http://www.youtube.com/watch?v=AgEmZ39EtFk]</code>' ).'</li>
+					<li>'.sprintf( __('<a href="%s" target="_blank">Google instructions</a> %s') , 'http://support.mydomain.com/videos/google-video/', '<code>[googlevideo=http://video.google.com/googleplayer.swf?docId=-8459301055248673864]</code>' ).'</li>
+					<li>'.sprintf( __('<a href="%s" target="_blank">DailyMotion instructions</a> %s'), 'http://support.mydomain.com/videos/dailymotion/', '<code>[dailymotion id=5zYRy1JLhuGlP3BGw]</code>' ).'</li>
+					<li>'.sprintf( __('<a href="%s" target="_blank">Post to WordPress button</a> %s'), 'http://support.mydomain.com/videos/vodpod/', 'Use VodPod to post videos from hundreds of sites (beta)' ).'</li>
 				</ul>
 			</td>
 		</tr>
@@ -663,13 +694,46 @@ function video_shortcodes_help($video_form) {
 	';
 }
 
+function video_label_css() { ?>
+<style type="text/css">#wpbody-content .describe td label { display: inline; }</style>
+<?php
+}
+
+/**
+ * include wp video links in feeds
+ */
+ function wp_add_videolink_in_excerpt( $text ){ 
+ 
+ 	$post_content = get_the_content(); 
+ 	
+ 	$r = preg_match_all( WP_VIDEO_TAG, $post_content, $matches, PREG_SET_ORDER ); 
+ 	
+ 	if ( $r === false || $r === 0 ) 
+ 		return $text; 
+ 
+ 	$vlink = $text; 
+ 	foreach ( $matches as $m ) { 
+ 		
+ 		$guid = video_preggetit( $m[1], VIDEO_TAG_GUID ); 
+ 		$info = video_get_info_by_guid( $guid );
+ 		if ( empty($info) )
+ 			continue; 
+ 		
+ 		$post_url = get_permalink(); 
+ 		$domain_prefix = substr( $info->domain, 0, strpos($info->domain, '.'));
+ 		$image_url = 'http://' . $domain_prefix . '.videos.mydomain.com/' . $guid . '/thumbnail/fmt_std'; 
+ 		$name = preg_replace( '/\.\w+/', '', basename( $info->path ) ); 
+ 		
+ 		$vlink .= "<br /><a href='$post_url'><img width='160' height='120' src='$image_url' /> Video: $name </a>";
+ 	}
+ 	
+ 	return $vlink; 
+ }
+ 
 function video_init() {
 	
 	add_filter( 'type_url_form_video', 'video_shortcodes_help');
 	add_filter( 'video_send_to_editor_url', 'video_send_to_editor_url', 10, 3 );
-
-	//TODO modify shortcodes
-	add_filter( 'the_content', 'video_content_parse' ); 
 
 	add_action('add_attachment', 'remote_transcode_one_video');
 
@@ -677,6 +741,11 @@ function video_init() {
 	add_filter( 'media_send_to_editor', 'video_send_to_editor_shortcode', 10, 3 );
 	add_filter( 'attachment_fields_to_edit', 'video_fields_to_edit', 10, 2 );
 	add_filter( 'attachment_fields_to_save', 'video_set_display_embed', 10, 2 );
+	add_filter( 'attachment_fields_to_save', 'video_set_rating', 10, 2 );
+	add_action( 'admin_head-media.php', 'video_label_css' );
+	add_action( 'admin_head-media-new.php', 'video_label_css' );
+	
+	add_filter('get_the_excerpt', 'wp_add_videolink_in_excerpt', 20);
 }
 
 add_action( 'init', 'video_init' );
