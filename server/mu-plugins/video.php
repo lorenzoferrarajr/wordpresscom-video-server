@@ -18,7 +18,6 @@ define( 'VIDEO_TAG_HT',      '/h="?([0-9]*)[;,", ]?/i' );
 
 
 add_shortcode( 'wpvideo', wp_video_tag_replace ); 
-add_shortcode( 'video', vidavee_video_tag_replace ); 
 
 /** 
  * replaces [wpvideo hFr8Nyar w=400] or [wpvideo hFr8Nyar w=400 h=200] 
