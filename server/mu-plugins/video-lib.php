@@ -253,7 +253,6 @@ function update_video_info( $blog_id, $post_id, $column, $value ){
 	global $wpdb; 
 	
 	//make sure the row exists
-	$wpdb->send_reads_to_masters();
 	$sql_s = $wpdb->prepare( "SELECT * FROM videos WHERE blog_id=%d AND post_id=%d", $blog_id, $post_id ); 
 	$r = $wpdb->get_row( $sql_s ); 
 	

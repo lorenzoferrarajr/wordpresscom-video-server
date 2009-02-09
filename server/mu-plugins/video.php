@@ -239,7 +239,7 @@ function video_embed( $args ) {
 
 	$text = __( 'This video is being processed' );
 	$subtext = '';
-	if ($eta = video_estimate_remaining_time( $info->guid, video_get_filesize( $md5_path ) ) ) {
+	if ($eta = video_estimate_remaining_time( $info->guid, 1*1024*1024 ) ) {
 		$subtext .= '<p>'.sprintf( __( 'It will be ready in about <strong>%s</strong>.' ), $eta ).'</p>';
 	}
 	$subtext .= ( $context == 'blog' )? '<p>'._( 'Normal users won&#8217;t see this notice' ).'</p>' : '';
