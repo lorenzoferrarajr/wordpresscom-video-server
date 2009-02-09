@@ -123,9 +123,9 @@ by the following rewrite rule defined in .htaccess:
 `RewriteCond %{HTTP_HOST} ^v\.mydomain\.com`
 `RewriteCond %{REQUEST_URI} !/videofile/`
 `RewriteCond %{REQUEST_URI} !/wp-content/`
-`RewriteRule ^([^/]+) /wp-content/plugins/video/flvplayer.swf?guid=$1 [L,R=302]`
+`RewriteRule ^([^/]+) /wp-content/plugins/video/flvplayer.swf?guid=$1&video_info_path=http://v.mydomain.com/wp-content/plugins/video/video-xml.php [L,R=302]`
 
-Once the player (flvplayer.swf) is loaded, it receives the video guid,
+Once the player (flvplayer.swf) is loaded, it receives the video guid, and path to obtain video XML information. 
 then the flash player queries video-xml.php to retrieve all the relevant information about a video, 
 including different formats, thumbnail images, duration, and other meta information.
 
