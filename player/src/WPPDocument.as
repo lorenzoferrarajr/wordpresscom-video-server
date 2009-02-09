@@ -510,6 +510,8 @@ package
       if (root.loaderInfo.parameters["canvasheight"])
         canvasHeight = root.loaderInfo.parameters["canvasheight"];
       
+      if (root.loaderInfo.parameters["video_info_path"])
+        WPPConfiguration.XML_URL_BASE = root.loaderInfo.parameters["video_info_path"];
       
       // Whether to play the video at once when it's loaded
       if (root.loaderInfo.parameters["autoplay"]=="yes")

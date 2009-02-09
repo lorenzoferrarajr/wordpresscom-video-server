@@ -127,7 +127,6 @@ package com.wordpress.wpp.ui
           });
       // Dispatch the "INIT_VIDEO" event to tell the main application that the XML information is loaded.
       // * No need to wait for the splash image.
-      /* var initEvent:Event = new Event("INIT_VIDEO"); */
       var initEvent:Event = new Event(WPPEvents.SPLASH_SCREEN_INIT);
       dispatchEvent(initEvent);
     }
@@ -139,7 +138,6 @@ package com.wordpress.wpp.ui
     
     private function playVideoHandler(event:MouseEvent):void
     {
-      /* var playEvent:Event = new Event("PLAY_VIDEO"); */
       var playEvent:Event = new Event(WPPEvents.SPLASH_VIDEO_PLAY);
       dispatchEvent(playEvent);
     }

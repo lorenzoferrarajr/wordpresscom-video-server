@@ -28,6 +28,7 @@ package com.wordpress.wpp.gui
     private var _volume_bar:GUIVolumeSeek;
     private var _bg_mc:MovieClip;
     private var _top_bar:MovieClip;
+    private var _info_button:SimpleButton;
     
     public var _hd_on:SimpleButton;
     public var _hd_off:SimpleButton;
@@ -48,6 +49,7 @@ package com.wordpress.wpp.gui
       if( hd_off )    _hd_off    = hd_off;
       if( speaker )    _speaker = speaker;
       if( hd_switch )    _hd_switch = hd_switch;
+      if( info_button )  _info_button = info_button;
       
       _hd_switch.gotoAndStop(2);
       _hd_off.visible = false;
@@ -58,6 +60,10 @@ package com.wordpress.wpp.gui
       var sbbottom:Number = this.height - this._seek_bar.y - this._seek_bar.height;
       var sbmarginright:Number = this.width - this._seek_bar.width - this._seek_bar.x;
       
+      UILayoutManager.addTarget(_info_button,{
+        "left":71,
+        "top":5
+      });
       
       UILayoutManager.addTarget(_hd_off,{
       "right":11,

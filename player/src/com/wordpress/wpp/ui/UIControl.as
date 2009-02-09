@@ -21,6 +21,8 @@ package com.wordpress.wpp.ui
   import flash.events.Event;
   import flash.events.EventDispatcher;
   import flash.events.MouseEvent;
+  import flash.net.URLRequest;
+  import flash.net.navigateToURL;
   
   /**
    * 
@@ -40,6 +42,7 @@ package com.wordpress.wpp.ui
     protected var hd_on:SimpleButton;
     protected var hd_off:SimpleButton;
     protected var hd_switch:MovieClip;
+    protected var info_button:SimpleButton;
     
     protected var seek_bar:GUIVideoSeek;
     protected var volume_bar:GUIVolumeSeek;
@@ -135,19 +138,25 @@ package com.wordpress.wpp.ui
       doc = gc.root as WPPDocument;
       
       // IDE GUI Objects mapping
-      play_btn     = gc.play_btn;
-      pause_btn     = gc.pause_btn;
-      fullscreen_btn   = gc.fullscreen_btn;
-      seek_bar     = gc.seek_bar;
-      volume_bar    = gc.volume_bar;
-      hd_on       = gc.hd_on;
-      hd_off       = gc.hd_off;
-      hd_switch    = gc.hd_switch;
+      // The gc.- stands for the objects in the IDE stage
+      play_btn       = gc.play_btn;
+      pause_btn      = gc.pause_btn;
+      fullscreen_btn = gc.fullscreen_btn;
+      seek_bar       = gc.seek_bar;
+      volume_bar     = gc.volume_bar;
+      hd_on          = gc.hd_on;
+      hd_off         = gc.hd_off;
+      hd_switch      = gc.hd_switch;
+      info_button    = gc.info_button;
       
       // Turn of the pause button at first
       pause_btn.visible = false;
       alterHDEvents(doc.info.hasHD);
-      fullscreen_btn.addEventListener(MouseEvent.CLICK, fullScreenHandler)
+      fullscreen_btn.addEventListener(MouseEvent.CLICK, fullScreenHandler);
+      var infoButtonPopup:Function = function(event:MouseEvent):void {
+        navigateToURL(new URLRequest("http://support.wordpress.com/videos"),"_blank");
+      }
+      info_button.addEventListener(MouseEvent.CLICK, infoButtonPopup);
     }
 
   }
