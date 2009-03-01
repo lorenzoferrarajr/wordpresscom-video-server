@@ -5,12 +5,16 @@
  * @description   Document Class for WordPress Video Player in Flash CS3
  * @author      automattic
  * @created:     July 19, 2008
- * @modified:     Nov 17, 2008  
- *   
+ * @modified:     Feb 16, 2009  
+ * @change list   Feb 16,
+ *                Rearranged the logic of age verfication. Now the 
+ *                player would never ask for the user to input his/her age if he
+ *                had once provided it before.
  */
 
 package
 {  
+  import com.wordpress.wpp.config.RatingDictionary;
   import com.wordpress.wpp.config.VideoFormat;
   import com.wordpress.wpp.config.VideoInfo;
   import com.wordpress.wpp.config.WPPConfiguration;
@@ -33,6 +37,7 @@ package
   import flash.display.Sprite;
   import flash.events.Event;
   import flash.events.MouseEvent;
+  import flash.net.SharedObject;
   import flash.ui.Mouse;
   
   // The main class of this Flash Application
@@ -172,7 +177,6 @@ package
     function WPPDocument()
     {
       layoutManager = new UILayoutManager();
-      
       super();
       
       // Load the settings from HTML (where the flashplayer embeded)
@@ -214,8 +218,13 @@ package
       guiCtr.visible = true;
       guiCtr.initFrameHandler();
       
-      embedManager = new EmbedManager(this);
-      embedManager.initEmbedding();
+      if (info.embededCode) {
+        embedManager = new EmbedManager(this);
+        embedManager.initEmbedding();
+      } else {
+        guiCtr.resetInfoButtonToLeftTop();
+      }
+      
       
       // Setup the controller
       splashControl = new UISplashControl(guiCtr);
@@ -238,29 +247,45 @@ package
         max_report_time = info.mainDuration + 10;
       }
       
+      var verifyUserAge:Boolean = false;
       if (info.rating != "" && info.rating)
       {
-        WPPConfiguration.VERIFY_USER_AGE = true;
+        verifyUserAge = true;
       }
       
-      // If the autoplay flag is true, play the video at once
-      if (WPPConfiguration.AUTOPLAY_WHEN_LOADED && !WPPConfiguration.VERIFY_USER_AGE)
+      // If the autoplay flag is true, and there's no need to confirm the user's
+      // birthday, then just play the video at once
+      //
+      if (WPPConfiguration.AUTOPLAY_WHEN_LOADED && !verifyUserAge)
       {
         playMainVideo(info);
       }
       else
       {
-        // Play the video until the user asks so
+        // Show the splash screen and wait the action from the user
+        // No matter whether it is set as "automatically playing", if we need
+        // to verify the user's age, we need to show the splash screen. 
         splashControl.addEventListener(WPPEvents.SPLASH_VIDEO_PLAY, splashPlayHandler);
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_ON_HD, splashHDOnHandler);
         splashControl.addEventListener(WPPEvents.SPLASH_TURN_OFF_HD, splashHDOffHandler);
+        
+        // Whether we need to show the verification box 
+        if (verifyUserAge) {
+          var minAge:Number = RatingDictionary.RATING_DICT[info.rating];
+          var currentUserAgeSharedObject:SharedObject = SharedObject.getLocal(UIAgeChecker.CHECK_AGE_SHAREDOBJECT_NAME);
+          var localMonth:Number = Number(currentUserAgeSharedObject.data.localMonth);
+          var localDay:Number = Number(currentUserAgeSharedObject.data.localDay);
+          var localYear:Number = Number(currentUserAgeSharedObject.data.localYear);
+          currentUserAgeSharedObject.data.testVar = "test";
+          currentUserAgeSharedObject.data.testVar2 = "test2";
+          currentUserAgeSharedObject.flush();
+          // Whether we need to show the check box
+          if (true || !currentUserAgeSharedObject.data.localYear || 
+          !UIAgeChecker.isValidateAge(minAge, localMonth, localDay, localYear)) {
+            var ageChecker:UIAgeChecker = new UIAgeChecker(this, minAge);
+          }
+        }
       }
-      
-      if(WPPConfiguration.VERIFY_USER_AGE)
-      {
-        var ageChecker:UIAgeChecker = new UIAgeChecker(this);
-      }
-      
     }
     
     /**
@@ -284,7 +309,7 @@ package
     }
     
     /**
-     * Turn on hd mode
+     * Turn on hd(higher-definition) mode
      * 
      */    
     public function turnOnHD():void
@@ -308,7 +333,7 @@ package
 
     /**
      * play main video handler for splash controller 
-     * @param event
+     * @param event Event
      * 
      */
     private function splashPlayHandler(event:Event):void
@@ -330,12 +355,10 @@ package
       // VCore instance handles almost all the core playing mechanism
       if (WPPConfiguration.IS_DYNAMIC_SEEKING)
       {
-        trace("new VCoreDynamicSeeking");
         mainVideo = new VCoreDynamicSeeking(this, vo.movie_file, vo.width, vo.height);
       }
       else
       {
-        trace("new VCore");
         mainVideo = new VCore(this, vo.movie_file, vo.width, vo.height);
       }
 
@@ -355,12 +378,16 @@ package
       // Here we got the Video on our screen :)
       addChild(mainVideo);
       
-      // make the controller upper of the video
+      // make the controller on the top of the video
       addChild(guiCtr);
-      addChild(embedManager.embedMain);
-      addChild(embedManager.toggleButton);
-
-      // When the video stops, let's show the playlist.
+      
+      // If we need to show the embed code toggle
+      if (info.embededCode) {
+        addChild(embedManager.embedMain);
+        addChild(embedManager.toggleButton);
+      }
+      
+      // When the video stops, let's show the replay button (or playlist)
       mainVideo.addEventListener(WPPEvents.VCORE_STOP, videoStopHandler, false, 0 ,true);
     }
     
@@ -523,16 +550,7 @@ package
         WPPConfiguration.AUTOPLAY_WHEN_LOADED = false;
       }
       
-      // Whether to show the age-verification screen in the splash screen
-      if (root.loaderInfo.parameters["verifyage"]=="yes")
-      {
-        WPPConfiguration.VERIFY_USER_AGE = true;
-      }
-      else
-      {
-        WPPConfiguration.VERIFY_USER_AGE = false;
-      }
-      
+
       if (root.loaderInfo.parameters["dynamicseek"] == "yes")
       {
         WPPConfiguration.IS_DYNAMIC_SEEKING = true;

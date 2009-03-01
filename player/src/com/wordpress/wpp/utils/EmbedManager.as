@@ -81,9 +81,10 @@
     public function initEmbedding():void
     {
       resetEmbedding();
-      if (!doc.info.embededCode)
-      return;
       
+      // Check whether we need to show the embedded toggle button 
+      if (!doc.info.embededCode)
+        return;
       
       toggleButton = new GUIEmbedToggleButton();
       doc.addChild(toggleButton);

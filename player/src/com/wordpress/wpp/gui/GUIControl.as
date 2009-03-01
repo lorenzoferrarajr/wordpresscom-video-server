@@ -119,6 +119,14 @@ package com.wordpress.wpp.gui
       });
     }
     
+    public function resetInfoButtonToLeftTop():void {
+      UILayoutManager.removeTarget(_info_button);
+      UILayoutManager.addTarget(_info_button,{
+        "left":5,
+        "top":5
+      });
+    }
+    
     public function initFrameHandler():void
     {
       renderFrame();

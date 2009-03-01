@@ -6,7 +6,10 @@
  * @author        automattic
  * @created:      Dec 11, 2008
  * @modified:     Dec 13, 2008  
- *   
+ * @change list   Feb 16, 
+ *                Removed the static variable 'VERIFY_USER_AGE', since our 
+ *                application will check for the necessity by the incoming XML 
+ *                data.
  */
  
 
@@ -37,16 +40,10 @@ package com.wordpress.wpp.config
     // WARNING: Set to false when your server doesn't support dynamic seeking
     public static var IS_DYNAMIC_SEEKING:Boolean = true;
     
-    // Whether to show the age verification screen in the splash screen
-    // Default is true (do the verification)
-    public static var VERIFY_USER_AGE:Boolean = true;
-    
     // Local player configurations   
     public static var IS_LOCAL_MODE:Boolean = false;
     public static var LOCAL_MODE_PATH:String = "clips";
     public static var LOCAL_MODE_XML_FILENAME:String = "video.xml"; 
-    
-    
     
     // The URL of video information's XML data source base
     public static var XML_URL_BASE:String = "http://v.wordpress.com/wp-content/plugins/video/video-xml.php";

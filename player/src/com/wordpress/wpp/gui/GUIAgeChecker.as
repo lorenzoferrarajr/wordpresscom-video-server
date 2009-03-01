@@ -5,13 +5,16 @@
  * @description   (linkage via FLA) Age verification components
  * @author        automattic
  * @created:      Jan 10, 2009
- * @modified:     Jan 22, 2009
- *   
+ * @modified:     Feb 16, 2009
+ * @change log    Feb 16,
+ *                Fixed some bugs that may mess up the UI if a user did not
+ *                close a combobox after providing his birth date.
  */
 package com.wordpress.wpp.gui
 {
   import com.wordpress.wpp.events.ObjectEvent;
   import com.wordpress.wpp.events.WPPEvents;
+  import com.wordpress.wpp.ui.UIAgeChecker;
   
   import fl.controls.Button;
   import fl.controls.ComboBox;
@@ -24,24 +27,28 @@ package com.wordpress.wpp.gui
   // This class is binded with a symbol from the FLA source
   dynamic public class GUIAgeChecker extends Sprite
   {
+    // Comboboxes for selecting birthday
     private var yearComboBox:ComboBox;
     private var monthComboBox:ComboBox;
     private var dayComboBox:ComboBox;
-    
     private var yearComboBoxInitialized:Boolean = false;
     private var monthComboBoxInitialized:Boolean = false;
     private var dayComboBoxInitialized:Boolean = false;
     
+    // Submit button
     private var submitButton:Button;
     
-    public function GUIAgeChecker()
-    {
+    public function GUIAgeChecker() {
       // initialize the components from stage
       super();
       this.addEventListener(Event.ADDED_TO_STAGE, initHandler);
     }
     
     public function unregister():void {
+      // Close the comboboxes
+      yearComboBox.close();
+      monthComboBox.close();
+      dayComboBox.close();
       submitButton.removeEventListener(MouseEvent.CLICK, checkBirthHandler);
     }
     
