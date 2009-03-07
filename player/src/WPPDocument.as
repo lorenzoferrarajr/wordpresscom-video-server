@@ -37,7 +37,6 @@ package
   import flash.display.Sprite;
   import flash.events.Event;
   import flash.events.MouseEvent;
-  import flash.net.SharedObject;
   import flash.ui.Mouse;
   
   // The main class of this Flash Application
@@ -272,18 +271,7 @@ package
         // Whether we need to show the verification box 
         if (verifyUserAge) {
           var minAge:Number = RatingDictionary.RATING_DICT[info.rating];
-          var currentUserAgeSharedObject:SharedObject = SharedObject.getLocal(UIAgeChecker.CHECK_AGE_SHAREDOBJECT_NAME);
-          var localMonth:Number = Number(currentUserAgeSharedObject.data.localMonth);
-          var localDay:Number = Number(currentUserAgeSharedObject.data.localDay);
-          var localYear:Number = Number(currentUserAgeSharedObject.data.localYear);
-          currentUserAgeSharedObject.data.testVar = "test";
-          currentUserAgeSharedObject.data.testVar2 = "test2";
-          currentUserAgeSharedObject.flush();
-          // Whether we need to show the check box
-          if (true || !currentUserAgeSharedObject.data.localYear || 
-          !UIAgeChecker.isValidateAge(minAge, localMonth, localDay, localYear)) {
-            var ageChecker:UIAgeChecker = new UIAgeChecker(this, minAge);
-          }
+          var ageChecker:UIAgeChecker = new UIAgeChecker(this, minAge);
         }
       }
     }

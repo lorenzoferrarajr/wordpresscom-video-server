@@ -23,7 +23,6 @@ package com.wordpress.wpp.ui
   import flash.events.NetStatusEvent;
   import flash.events.TimerEvent;
   import flash.external.ExternalInterface;
-  import flash.net.SharedObject;
   import flash.text.TextField;
   import flash.text.TextFormat;
   import flash.text.TextFormatAlign;
@@ -40,10 +39,6 @@ package com.wordpress.wpp.ui
     private var overlapSprite:Sprite;
     private var ageChecker:GUIAgeChecker;
     private var notAllowedHint:TextField = new TextField();
-    
-    // Realtime check daemon timer, used for checking a user's input in 
-    // one player from all other players embedded in a single web page.
-    private var checkDaemonTimer:Timer = new Timer(1000);
     
     // The required age for watching this video
     private var minAge:Number;
@@ -83,61 +78,11 @@ package com.wordpress.wpp.ui
       doc.addChild(ageChecker);
       UILayoutManager.addTarget(ageChecker, {"centerx":0, "centery":0});
       ageChecker.addEventListener(WPPEvents.SPLASH_AGE_VERIFICATION, confirmBirthdateHandler);
-      
-      // Start realtime checker
-      realTimeCheck();
-    }
-    
-    
-    /**
-     * Invoke the check local age in every interval  
-     * @param event TimerEvent
-     * 
-     */
-    private function checkTimerHandler(event:TimerEvent):void {
-      checkLocalAge()
-    }
-    private function realTimeCheck():void {
-      checkDaemonTimer.addEventListener(TimerEvent.TIMER, checkTimerHandler);
-      checkDaemonTimer.start();
-      checkLocalAge();
-    }
-    
-    private function checkLocalAge():void {
-      var currentUserAgeSharedObject:SharedObject = SharedObject.getLocal(UIAgeChecker.CHECK_AGE_SHAREDOBJECT_NAME);
-      var localMonth:Number = Number(currentUserAgeSharedObject.data.localMonth);
-      var localDay:Number = Number(currentUserAgeSharedObject.data.localDay);
-      var localYear:Number = Number(currentUserAgeSharedObject.data.localYear);
-      try{ExternalInterface.call("console.info", localYear.toString());}catch(e){}
-      if (isNaN(localMonth)) return;
-      if (isNaN(localDay)) return;
-      if (isNaN(localYear)) return;
-      confirmBirthDate(localMonth, localDay, localYear);
     }
     
     private function confirmBirthdateHandler(event:ObjectEvent):void
     {
-      // Remove the confirm listener to release the memory
-      
       var userSelectedAgeDate:Object = event.data;
-      
-      // update sharedobject (cookie)
-      var currentUserAgeSharedObject:SharedObject = SharedObject.getLocal(UIAgeChecker.CHECK_AGE_SHAREDOBJECT_NAME);
-      var localYear:Number = userSelectedAgeDate.year;
-      var localMonth:Number = userSelectedAgeDate.month;
-      var localDay:Number = userSelectedAgeDate.day;
-      currentUserAgeSharedObject.data.localMonth = localMonth.toString();
-      currentUserAgeSharedObject.data.localDay = localDay.toString();
-      currentUserAgeSharedObject.data.localYear = localYear.toString();
-      currentUserAgeSharedObject.data.test2 = "haha";
-      
-      
-      try{ExternalInterface.call("console.info","* "+currentUserAgeSharedObject.data.localYear);}catch(e){}
-      var a111:Function = function(event:NetStatusEvent):void {
-        try{ExternalInterface.call("console.info","* "+event.info.code);}catch(error){}
-      }
-      currentUserAgeSharedObject.addEventListener(NetStatusEvent.NET_STATUS, a111);
-      var flushResult:String = currentUserAgeSharedObject.flush();
       confirmBirthDate(userSelectedAgeDate.month, 
           userSelectedAgeDate.day,
           userSelectedAgeDate.year);
@@ -150,17 +95,14 @@ package com.wordpress.wpp.ui
         var minAge:Number = RatingDictionary.RATING_DICT[doc.info.rating];
         if (isValidateAge(minAge, month, day, year)) {
           // valid!
-          trace("passed");
           unregisterAgeChecker();
           doc.removeChild(overlapSprite);
         } else {
-          trace("not allowd");
           // invalid
           //unregisterAgeChecker();
           notAllowedToWatch();
         }
       } else {
-        trace("3rd");
         // invalid
         //unregisterAgeChecker();
         notAllowedToWatch();
@@ -174,7 +116,6 @@ package com.wordpress.wpp.ui
      */
     private function notAllowedToWatch():void
     {
-      checkDaemonTimer.stop();
       notAllowedHint.text = DISALLOW_MESSAGE;
       notAllowedHint.width = 450;
       notAllowedHint.selectable = false;
@@ -186,7 +127,6 @@ package com.wordpress.wpp.ui
       notAllowedHint.setTextFormat(format);
       doc.addChild(notAllowedHint);
       UILayoutManager.addTarget(notAllowedHint, {"centery":-35, "centerx":0});
-      
       ageChecker.visible = false;
       notAllowedHint.visible = true;
     }
@@ -200,11 +140,6 @@ package com.wordpress.wpp.ui
       ageChecker.removeEventListener(WPPEvents.SPLASH_AGE_VERIFICATION, confirmBirthdateHandler);
       ageChecker.unregister();
       doc.removeChild(ageChecker);
-      
-      // Stop the check daemon timer, which is set up to check user verification action
-      // from other players in a same web page. 
-      checkDaemonTimer.stop();
-      checkDaemonTimer.removeEventListener(TimerEvent.TIMER, checkTimerHandler);
     }
     
     /**
@@ -247,8 +182,7 @@ package com.wordpress.wpp.ui
         { //AGE PASS
           return true;
         }
-        
-      } 
+      }
       else if (diffYear < minAge) 
       { // too young
         return false;
