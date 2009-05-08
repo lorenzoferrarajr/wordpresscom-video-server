@@ -24,8 +24,6 @@ add_shortcode( 'wpvideo', wp_video_tag_replace );
  * with <embed> tags so that the browser knows to play the video
  */
 function wp_video_tag_replace( $attr ) {
-	if ( faux_faux() )
-		return '';
 	global $current_blog, $post; 
 	
 	$guid   = $attr[0]; 
