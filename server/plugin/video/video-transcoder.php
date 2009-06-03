@@ -236,7 +236,6 @@ function send_to_fileserver( $format, $video_file, $thumbnail_jpg, $original_jpg
 	 * sanity check 
 	 * if user deleted the video by this step, don't process it further
 	 */
-	$wpdb->send_reads_to_masters();
 	$sql = $wpdb->prepare( "SELECT * FROM videos WHERE blog_id=%d AND post_id=%d", $blog_id, $post_id); 
 	$r = $wpdb->get_row( $sql );
 	

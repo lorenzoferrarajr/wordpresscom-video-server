@@ -44,7 +44,6 @@ $original_jpg  = $_FILES['original_jpg']['tmp_name'];
  * sanity check 
  * if user deleted the video by this step, don't process it further
  */
-$wpdb->send_reads_to_masters();
 $sql = $wpdb->prepare( "SELECT * FROM videos WHERE blog_id=%d AND post_id=%d", $blog_id, $post_id); 
 $r = $wpdb->get_row( $sql );
 
