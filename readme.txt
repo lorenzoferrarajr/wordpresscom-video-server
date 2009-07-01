@@ -97,7 +97,7 @@ If you just use WordPress for your own personal blog, this is not for you.
 It's designed for *large scale WordPress MU systems* which host at least thousands of blogs.
 
 Meanwhile, it's easy to adapt this plugin to be used on single server installation,
-combiningg Web server, admin Web server and transcoder into a single server. 
+combining Web server, admin Web server and transcoder into a single server. 
  
 This plugin can also be used as the foundation for a video startup company.
 
