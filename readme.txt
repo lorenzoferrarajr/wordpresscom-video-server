@@ -3,7 +3,7 @@
 Contributors: Automattic, Inc.
 Tags: WordPress video, video solution
 Requires at least: 2.6
-Tested up to: 2.7
+Tested up to: 2.8
 Stable tag: trunk
 
 Video solutions framework, including player, transcoder and administration interface utilities as WordPress MU plugin. 
