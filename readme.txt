@@ -9,20 +9,20 @@ Stable tag: trunk
 Video solutions framework, including player, transcoder and administration interface utilities as WordPress MU plugin. 
 It powers WordPress.com video solutions and supports multiple formats including HD. 
 It is designed as a video solution for *large scale self-hosted WordPress MU systems*. 
-You will need to customize it with your own infrastructure configurations in order to use it.
+However, it is easy to work on a single server system as well. 
 
 == Description ==
 
 This package contains the video solutions framework, including transcoder and administration interface utilities, written in PHP. 
 The code was developed by Automattic, Inc., and powers WordPress.com video solutions.
-It supports multiple formats, including HD. 
+It supports multiple formats, including HD, and also supports open video (theora/ogg). 
 It is an open source project, which means you can reuse it, build upon it, and share it with the community.
 
 **Warning**
 *This plugin is different from other plugins because it can not be used "out-of-the-box".
 It is intended for self-hosted large scale WordPress MU sites that want to develop their own customized video solutions. 
 In addition to Web servers for WordPress MU , it requires at least one file server and one dedicated video transcoder. 
-Considerable amount of PHP coding and system administration skills are required to install, customize and deploy this plugin.*
+(although it will work on single server system as well). *
 
 Contained is a whole package of video solution code. 
 It can be used as the foundation for a full-fledged video system. 
@@ -51,12 +51,16 @@ Create them if necessary: wp-content/mu-plugins  and wp-content/plugins/video/
 Copy files in server/mu-plugins/ to your_WP_root/wp-content/mu-plugins; 
 and copy files in server/plugins/video/ to your_WP_root/wp-content/plugins/video/
 
-Carefully study the source code, understand your system environment, and modify places marked "CUSTOMIZE".
+Carefully study the source code, understand your system environment, and configure the domain names contained in video-config.php 
 
 2.
 Create a database and table named "videos," which is used to store individual video meta information.
 The sql script file is server/setup/videos-table.txt.
 Every video corresponds to one row in the table.
+
+Note that version 1.0 has altered the videos table structure. 
+If you are upgrading from version 0.9, please add the missing columns, 
+then run server/utilities/video-backfill-files.php to backfill the new columns. Otherwise your existing videos won't play. 
 
 3.
 Set up a dedicated transcoder server with Linux/Unix operation system.
@@ -72,13 +76,20 @@ If it can successfully transcode the video, it prints out the message "Congratul
 If you see an error message, make sure the transcoder is installed successfully.
 The transcoder is the heart of any video system, and it must work correctly.
 
+Version 1.0 and later supports theora/ogg, so you need ffmpeg1theora. 
+Follow instructions on http://v2v.cc/~j/ffmpeg2theora/install64.html 
+to install ffmpeg2theora to /usr/local/bin/ffmpeg2theora
+
+
 4.
 Determine your file serving infrastructure and file serving URL schemes.
 Set up your system environments. One URL serving sample is described in the extra note section.
 
+Note in version 1.0 and beyond, you don't really need to worry about the URL structure. 
+Once you configure parameters in video-config.php, everything will work correctly. 
+
 5.
 Testing and customization
-Because this is an entire video solution, it will take some time to test and tailor it to your system.
 
 The video player source code is also released. The player is written in actionscript 3 using Adobe Flash CS3. 
 The source code is located at directory player/ and you don't need to deploy it to your servers. 
@@ -107,7 +118,9 @@ This plugin can also be used as the foundation for a video startup company.
 
 == URL Structure ==
 
-Sample Video URL Structure
+Sample Video URL Structure 
+Note that in version 1.0 and beyond, by default you don't need to modify any .htaccess. 
+However, if you want to have shorter and more concise URL structure, you can follow the example below. 
 
 Suppose a user uploads a video, which is transcoded and processed successfully by the video system
 Internally, the video is assigned the guid: hFr8Nyar. The internal shortcode produced is [wpvideo hFr8Nyar].
@@ -160,3 +173,26 @@ The following rules are configured in .htaccess for this purpose:
 
 In the above, the video is served by /wp-content/blogs.php. This is a purely system-specific example. 
 You will need to determine how you will serve your videos, either from your own local data server or using CDN.
+
+== Change Log ==
+
+version 1.0  (Sep 2009)
+
+1. restructured videos table to accomdate theora/ogg and added new columns std_files, dvd_files, hd_files, etc to make file dependencies more explicit.
+   If you have a working previous version, and have live videos to serve, you must run video-backfill-files.php to update your table. 
+   
+2. support media rss in feed
+
+3. support many other features such as ratings, dynamic thumbnail capture feature in admin panel
+
+4. support open video 
+
+5. simplified the setup requirement dramatically
+
+6. fixed a few bugs reported by community members
+
+version 0.9 (July 2009)
+
+1. first released version.
+
+

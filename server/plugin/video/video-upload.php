@@ -5,7 +5,7 @@
  * it is ran as a background child process called after original raw video upload is completed
  * 
  * Author:  Automattic Inc
- * Version: 0.9
+ * Version: 1.0
  */
 
 $video_url  = $_SERVER["argv"][1]; 
@@ -19,7 +19,7 @@ $form['video_url'] = $video_url;
 $form['blog_id']   = $blog_id; 
 $form['post_id']   = $post_id; 
 $form['dc']        = $dc; 
-$form['auth']      = trim( 'saltedmd5' . md5( "your local secret" ) );
+$form['auth']      = trim( 'saltedmd5' . md5( 'your local secret' ) );
 
 $r = my_post_form( $transcoder, $form ); 
 

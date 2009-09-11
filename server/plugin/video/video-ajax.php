@@ -6,12 +6,12 @@
  * the video has finished processing
  * 
  * Author:  Automattic Inc
- * Version: 0.9
+ * Version:  1.0
  */
 require('../../../wp-config.php');
 if ( !isset($_GET['action']) )
 	return;
-
+	
 $act = $wpdb->escape( $_GET['action'] ); 
 
 switch ( $act ) {
