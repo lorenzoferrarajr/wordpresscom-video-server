@@ -61,8 +61,10 @@ function video_image_url_by_guid( $guid, $type='thumbnail', $format='fmt_std' ) 
  */
 function pick_fileserver( $dc = 'luv') {
 	
-	return 'http://' . MY_VIDEO_FILE_SERVER; 
-	
+	//return 'http://' . MY_VIDEO_FILE_SERVER; //if your site has a dedicated file server
+
+	$fileserver = get_option('siteurl');
+	return $fileserver;
 }
 
 function pick_transcoder() {
