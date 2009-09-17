@@ -6,13 +6,13 @@ Requires at least: 2.6
 Tested up to: 2.8
 Stable tag: trunk
 
-**Note that as of Sep, 17, 2009, this plugin has been migrated to WordPress Code:** 
-**http://code.trac.wordpress.org/** 
+Note that as of Sep, 17, 2009, this plugin has been migrated to WordPress Code: 
+http://code.trac.wordpress.org/
 
 This current plugin download page is no longer maintained. 
 
 Discussions and feedbacks: 
-**http://wpvideo.wordpress.com/**
+http://wpvideo.wordpress.com/
 
 ********************************************************************************
 
@@ -23,13 +23,13 @@ However, it is easy to work on a single server system as well.
 
 == Description ==
 
-**Note that as of Sep, 17, 2009, this plugin has been migrated to WordPress Code: **
-**http://code.trac.wordpress.org/** 
+Note that as of Sep, 17, 2009, this plugin has been migrated to WordPress Code:
+http://code.trac.wordpress.org/
 
-**This current plugin download page is no longer maintained. **
+This current plugin download page is no longer maintained.
 
 Discussions and feedbacks: 
-**http://wpvideo.wordpress.com/**
+http://wpvideo.wordpress.com/
 
 *********************************************************************************
 
