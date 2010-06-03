@@ -1,7 +1,7 @@
 === WordPress Video Solution Framework ===
 
-Contributors: Automattic, Inc.
-Tags: WordPress video, video solution
+Contributors: automattic
+Tags: WordPress video, video solution, WordPress.com
 Requires at least: 2.6
 Tested up to: 2.8
 Stable tag: trunk
